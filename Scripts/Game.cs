@@ -1,9 +1,15 @@
 public class Game
 {
+    bool isEndGame = false;
+
     int playerBoatsCount = 5;
     int enemyBoatsCount = 5;
     int mapsSize = 5;
 
+    int shotX = -1;
+    int shotY = -1;
+
+    Random random = new Random();
     Field playerField = new() {isPlayer = true};
     Field enemyField = new();
     Drawer drawer = new();
@@ -18,6 +24,15 @@ public class Game
         GenerateMaps();
 
         Draw();
+
+        while (!IsEndGame())
+        {
+            GetInput();
+
+            Logic();
+
+            Draw();
+        }
     }
 
     void GenerateMaps()
@@ -31,8 +46,97 @@ public class Game
         Console.Clear();
 
         drawer.DrawMap(playerField);
-        Console.WriteLine("\n ");
+        Console.WriteLine();
         drawer.DrawMap(enemyField);
+    }
+
+    void GetInput()
+    {
+        string? input = Console.ReadLine();
+
+        (shotX, shotY) = ReadInput(input);
+    }
+
+    (int, int) ReadInput(string? input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return (-1, -1);
+        }
+
+        int letterIndex = GetLetterIndex(input);
+        int numIndex = GetNumIndex(input);
+
+        Console.WriteLine(letterIndex + " " + numIndex);
+
+        return (letterIndex, numIndex);
+    }
+
+    int GetLetterIndex(string input)
+    {
+        char letter = input[0];
+        
+        if (letter >= 'a' && letter <= 'z' && letter - 'a' < mapsSize)
+        {
+            return letter - 'a';
+        }
+
+        return -1;
+    }
+
+    int GetNumIndex(string input)
+    {
+        int num = 0;
+
+        for (int i = 1; i < input.Length; i++)
+        {
+            if (char.IsDigit(input[i]))
+            {
+                num = num * 10 + (input[i] - '0');
+
+                if (num > mapsSize)
+                {
+                    return -1;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return num - 1;
+    }
+
+    void Logic()
+    {
+        if (shotX < 0 || shotY < 0) return;
+
+        if (playerField.CanTakeShot(enemyField, shotX, shotY))
+        {
+            (int xEnemyShot, int yEnemyShot) = GenerateXYEnemyShot(playerField);
+
+            playerField.TakeShot(enemyField, shotX, shotY);
+            enemyField.TakeShot(playerField, xEnemyShot, yEnemyShot);
+        }
+    }
+
+    bool IsEndGame()
+    {
+        return isEndGame;
+    }
+
+    (int, int) GenerateXYEnemyShot(Field field)
+    {
+        int x = random.Next(0, mapsSize);
+        int y = random.Next(0, mapsSize);
+
+        if (field.cells[x, y].isShoted) 
+        {
+            return GenerateXYEnemyShot(field);
+        }
+
+        return (x, y);
     }
 }
 
@@ -56,22 +160,23 @@ class Drawer
                 Console.Write(GetCell(field, j, i));
             }
         }
+
+        Console.WriteLine("\n Boats: " + field.boatsCount);
     }
 
     char GetCell(Field field, int x, int y)
     {
-        // Enemy
-        if (field.cells[x,y].isBoat && field.cells[x,y].isShoted && !field.isPlayer)
+        if (field.cells[x,y].isBoat && field.cells[x,y].isShoted)
         {
             return 'X';
         }
-        else if (field.cells[x,y].isShoted && !field.isPlayer)
+        else if (field.cells[x,y].isShoted)
         {
             return 'O';
         }
         
         // Player
-        if (field.cells[x,y].isBoat && field.isPlayer)
+        if (field.cells[x,y].isBoat && !field.cells[x,y].isShoted && field.isPlayer)
         {
             return '#';
         }
@@ -85,8 +190,8 @@ class Field
     Random random = new Random();
     public Cell[,] cells = {};
 
-    int boatsCount;
     int mapSize;
+    public int boatsCount;
     public bool isPlayer;
     
     public int MapSize { get {return mapSize;} private set {} }
@@ -130,6 +235,39 @@ class Field
         }
 
         return (x, y);
+    }
+
+    public bool CanTakeShot(Field fieldOfAttack, int x, int y)
+    {
+        if (fieldOfAttack.cells[x, y].isShoted)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void TakeShot(Field fieldOfAttack, int x, int y)
+    {
+        if (!fieldOfAttack.cells[x, y].isShoted)
+        {
+            if (fieldOfAttack.cells[x, y].isBoat)
+            {
+                fieldOfAttack.boatsCount--;
+            }
+
+            fieldOfAttack.cells[x, y].isShoted = true;
+        }
+    }
+
+    public bool IsDefeat()
+    {
+        if (boatsCount <= 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
 
