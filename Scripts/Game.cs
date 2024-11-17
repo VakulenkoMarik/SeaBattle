@@ -119,6 +119,11 @@ public class Game
             playerField.TakeShot(enemyField, shotX, shotY);
             enemyField.TakeShot(playerField, xEnemyShot, yEnemyShot);
         }
+
+        if (enemyField.IsDefeat() || playerField.IsDefeat())
+        {
+            isEndGame = true;
+        }
     }
 
     bool IsEndGame()
