@@ -4,8 +4,9 @@ public class Game
     int enemyBoatsCount = 5;
     int mapsSize = 5;
 
-    Field playerField = new();
+    Field playerField = new() {isPlayer = true};
     Field enemyField = new();
+    Drawer drawer = new();
 
     public void Start()
     {
@@ -27,21 +28,68 @@ public class Game
 
     void Draw()
     {
-        playerField.DrawMap();
+        Console.Clear();
 
-        Console.WriteLine("");
+        drawer.DrawMap(playerField);
+        Console.WriteLine("\n ");
+        drawer.DrawMap(enemyField);
+    }
+}
 
-        enemyField.DrawMap();
+class Drawer
+{
+    public void DrawMap(Field field)
+    {
+        Console.Write("  ");
+
+        for (char c = 'a'; c < 'a' + field.MapSize; c++)
+        {
+            Console.Write(c + "");
+        }
+
+        for (int i = 0; i < field.MapSize; i++)
+        {
+            Console.Write($"\n{i + 1} ");
+
+            for (int j = 0; j < field.MapSize; j++)
+            {
+                Console.Write(GetCell(field, j, i));
+            }
+        }
+    }
+
+    char GetCell(Field field, int x, int y)
+    {
+        // Enemy
+        if (field.cells[x,y].isBoat && field.cells[x,y].isShoted && !field.isPlayer)
+        {
+            return 'X';
+        }
+        else if (field.cells[x,y].isShoted && !field.isPlayer)
+        {
+            return 'O';
+        }
+        
+        // Player
+        if (field.cells[x,y].isBoat && field.isPlayer)
+        {
+            return '#';
+        }
+
+        return '.';
     }
 }
 
 class Field
 {
     Random random = new Random();
-    Cell[,] cells = {};
+    public Cell[,] cells = {};
 
     int boatsCount;
     int mapSize;
+    public bool isPlayer;
+    
+    public int MapSize { get {return mapSize;} private set {} }
 
     public void GenerateMap(int mapSize, int boatsCount)
     {
@@ -63,12 +111,9 @@ class Field
 
     void PlaceBoats()
     {
-        int x;
-        int y;
-
         for (int i = 0; i < boatsCount; i++)
         {
-            (x, y) = GenerateUniqueXY();
+            (int x, int y) = GenerateUniqueXY();
 
             cells[x, y].isBoat = true;
         }
@@ -76,8 +121,8 @@ class Field
 
     (int, int) GenerateUniqueXY()
     {
-        int x = random.Next(0, mapSize - 1);
-        int y = random.Next(0, mapSize - 1);
+        int x = random.Next(0, mapSize);
+        int y = random.Next(0, mapSize);
 
         if (cells[x, y].isBoat)
         {
@@ -85,26 +130,6 @@ class Field
         }
 
         return (x, y);
-    }
-
-    public void DrawMap()
-    {
-        for (int i = 0; i < mapSize; i++)
-        {
-            for (int j = 0; j < mapSize; j++)
-            {
-                if (cells[j, i].isBoat)
-                {
-                    Console.Write("#");
-                }
-                else
-                {
-                    Console.Write(".");
-                }
-            } 
-
-            Console.WriteLine();
-        }
     }
 }
 
