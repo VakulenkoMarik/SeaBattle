@@ -6,13 +6,11 @@ public class Game
     int enemyBoatsCount = 5;
     int mapsSize = 5;
 
-    int shotX = -1;
-    int shotY = -1;
+    int shotX = -1, shotY = -1;
 
     Random random = new Random();
     Field playerField = new() {isPlayer = true};
     Field enemyField = new();
-    Drawer drawer = new();
 
     public void Start()
     {
@@ -47,9 +45,50 @@ public class Game
     {
         Console.Clear();
 
-        drawer.DrawMap(playerField);
-        Console.WriteLine();
-        drawer.DrawMap(enemyField);
+        DrawMap(playerField);
+        DrawMap(enemyField);
+    }
+
+    void DrawMap(Field field)
+    {
+        Console.Write("  ");
+
+        for (char c = 'a'; c < 'a' + field.MapSize; c++)
+        {
+            Console.Write(c + "");
+        }
+
+        for (int i = 0; i < field.MapSize; i++)
+        {
+            Console.Write($"\n{i + 1} ");
+
+            for (int j = 0; j < field.MapSize; j++)
+            {
+                Console.Write(GetCell(field, j, i));
+            }
+        }
+
+        Console.WriteLine($"\n Boats: {field.boatsCount}\n");
+    }
+
+    char GetCell(Field field, int x, int y)
+    {
+        if (field.cells[x,y].isBoat && field.cells[x,y].isShoted)
+        {
+            return 'X';
+        }
+        else if (field.cells[x,y].isShoted)
+        {
+            return 'O';
+        }
+        
+        // Player
+        if (field.cells[x,y].isBoat && !field.cells[x,y].isShoted && field.isPlayer)
+        {
+            return '#';
+        }
+
+        return '.';
     }
 
     void GetInput()
@@ -164,51 +203,6 @@ public class Game
         }
 
         return "Enemy lost";
-    }
-}
-
-class Drawer
-{
-    public void DrawMap(Field field)
-    {
-        Console.Write("  ");
-
-        for (char c = 'a'; c < 'a' + field.MapSize; c++)
-        {
-            Console.Write(c + "");
-        }
-
-        for (int i = 0; i < field.MapSize; i++)
-        {
-            Console.Write($"\n{i + 1} ");
-
-            for (int j = 0; j < field.MapSize; j++)
-            {
-                Console.Write(GetCell(field, j, i));
-            }
-        }
-
-        Console.WriteLine("\n Boats: " + field.boatsCount);
-    }
-
-    char GetCell(Field field, int x, int y)
-    {
-        if (field.cells[x,y].isBoat && field.cells[x,y].isShoted)
-        {
-            return 'X';
-        }
-        else if (field.cells[x,y].isShoted)
-        {
-            return 'O';
-        }
-        
-        // Player
-        if (field.cells[x,y].isBoat && !field.cells[x,y].isShoted && field.isPlayer)
-        {
-            return '#';
-        }
-
-        return '.';
     }
 }
 
