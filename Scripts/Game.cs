@@ -33,6 +33,8 @@ public class Game
 
             Draw();
         }
+
+        OutputResults();
     }
 
     void GenerateMaps()
@@ -66,8 +68,6 @@ public class Game
 
         int letterIndex = GetLetterIndex(input);
         int numIndex = GetNumIndex(input);
-
-        Console.WriteLine(letterIndex + " " + numIndex);
 
         return (letterIndex, numIndex);
     }
@@ -143,6 +143,28 @@ public class Game
 
         return (x, y);
     }
+
+    void OutputResults()
+    {
+        string result = BattleResult();
+
+        Console.WriteLine($"\n{result}");
+    }
+
+    string BattleResult()
+    {
+        if (playerField.IsDefeat())
+        {
+            if (enemyField.IsDefeat())
+            {
+                return "Draw";
+            }
+
+            return "Player lost";
+        }
+
+        return "Enemy lost";
+    }
 }
 
 class Drawer
@@ -203,6 +225,11 @@ class Field
 
     public void GenerateMap(int mapSize, int boatsCount)
     {
+        if (mapSize * mapSize < boatsCount)
+        {
+            boatsCount = mapSize * mapSize - 1;
+        }
+
         this.boatsCount = boatsCount;
         this.mapSize = mapSize;
 
