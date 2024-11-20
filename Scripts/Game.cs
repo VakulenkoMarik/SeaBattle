@@ -1,23 +1,20 @@
 public class Game
 {
-    bool isEndGame = false;
+    private int mapsSize = 5;
 
-    int playerBoatsCount = 5;
-    int enemyBoatsCount = 5;
-    int mapsSize = 5;
+    private int shotX = -1, shotY = -1;
 
-    int shotX = -1, shotY = -1;
+    private Random random = new Random();
 
-    Random random = new Random();
-    Field playerField = new() {isPlayer = true};
-    Field enemyField = new();
+    private Player player = new Player() {isHuman = true};
+    private Player enemy = new Player();
 
     public void Start()
     {
         GameCycle();
     }
 
-    void GameCycle()
+    private void GameCycle()
     {
         GenerateMaps();
 
@@ -25,7 +22,7 @@ public class Game
 
         while (!IsEndGame())
         {
-            GetInput();
+            InputProcessing();
 
             Logic();
 
@@ -35,70 +32,28 @@ public class Game
         OutputResults();
     }
 
-    void GenerateMaps()
+    private void GenerateMaps()
     {
-        playerField.GenerateMap(mapsSize, playerBoatsCount);
-        enemyField.GenerateMap(mapsSize, enemyBoatsCount);
+        player.GenerateField(mapsSize);
+        enemy.GenerateField(mapsSize);
     }
 
-    void Draw()
+    private void Draw()
     {
         Console.Clear();
 
-        DrawMap(playerField);
-        DrawMap(enemyField);
+        player.DrawMap();
+        enemy.DrawMap();
     }
 
-    void DrawMap(Field field)
-    {
-        Console.Write("  ");
-
-        for (char c = 'a'; c < 'a' + field.MapSize; c++)
-        {
-            Console.Write(c + "");
-        }
-
-        for (int i = 0; i < field.MapSize; i++)
-        {
-            Console.Write($"\n{i + 1} ");
-
-            for (int j = 0; j < field.MapSize; j++)
-            {
-                Console.Write(GetCell(field, j, i));
-            }
-        }
-
-        Console.WriteLine($"\n Boats: {field.boatsCount}\n");
-    }
-
-    char GetCell(Field field, int x, int y)
-    {
-        if (field.cells[x,y].isBoat && field.cells[x,y].isShoted)
-        {
-            return 'X';
-        }
-        else if (field.cells[x,y].isShoted)
-        {
-            return 'O';
-        }
-        
-        // Player
-        if (field.cells[x,y].isBoat && !field.cells[x,y].isShoted && field.isPlayer)
-        {
-            return '#';
-        }
-
-        return '.';
-    }
-
-    void GetInput()
+    private void InputProcessing()
     {
         string? input = Console.ReadLine();
 
         (shotX, shotY) = ReadInput(input);
     }
 
-    (int, int) ReadInput(string? input)
+    private (int, int) ReadInput(string? input)
     {
         if (string.IsNullOrEmpty(input))
         {
@@ -111,7 +66,7 @@ public class Game
         return (letterIndex, numIndex);
     }
 
-    int GetLetterIndex(string input)
+    private int GetLetterIndex(string input)
     {
         char letter = input[0];
         
@@ -123,7 +78,7 @@ public class Game
         return -1;
     }
 
-    int GetNumIndex(string input)
+    private int GetNumIndex(string input)
     {
         int num = 0;
 
@@ -147,54 +102,57 @@ public class Game
         return num - 1;
     }
 
-    void Logic()
+    private void Logic()
     {
-        if (shotX < 0 || shotY < 0) return;
-
-        if (playerField.CanTakeShot(enemyField, shotX, shotY))
+        if (shotX < 0 || shotY < 0)
         {
-            (int xEnemyShot, int yEnemyShot) = GenerateXYEnemyShot(playerField);
-
-            playerField.TakeShot(enemyField, shotX, shotY);
-            enemyField.TakeShot(playerField, xEnemyShot, yEnemyShot);
+            return;
         }
 
-        if (enemyField.IsDefeat() || playerField.IsDefeat())
+        if (player.CanTakeShot(enemy.field, shotX, shotY))
         {
-            isEndGame = true;
+            (int xEnemyShot, int yEnemyShot) = GenerateXYEnemyShot(player.field);
+
+            enemy.GetShot(shotX, shotY);
+            player.GetShot(xEnemyShot, yEnemyShot);
         }
     }
 
-    bool IsEndGame()
+    private bool IsEndGame()
     {
-        return isEndGame;
+        if (enemy.IsDefeat() || player.IsDefeat())
+        {
+            return true;
+        }
+
+        return false;
     }
 
-    (int, int) GenerateXYEnemyShot(Field field)
+    private (int, int) GenerateXYEnemyShot(Field field)
     {
-        int x = random.Next(0, mapsSize);
-        int y = random.Next(0, mapsSize);
+        int x, y;
 
-        if (field.cells[x, y].isShoted) 
+        do
         {
-            return GenerateXYEnemyShot(field);
+            (x, y) = (random.Next(0, mapsSize), random.Next(0, mapsSize));
         }
+        while (field.GetCell(x, y).isShoted);
 
         return (x, y);
     }
 
-    void OutputResults()
+    private void OutputResults()
     {
         string result = BattleResult();
 
         Console.WriteLine($"\n{result}");
     }
 
-    string BattleResult()
+    private string BattleResult()
     {
-        if (playerField.IsDefeat())
+        if (player.IsDefeat())
         {
-            if (enemyField.IsDefeat())
+            if (enemy.IsDefeat())
             {
                 return "Draw";
             }
@@ -204,107 +162,4 @@ public class Game
 
         return "Enemy lost";
     }
-}
-
-class Field
-{
-    Random random = new Random();
-    public Cell[,] cells = {};
-
-    int mapSize;
-    public int boatsCount;
-    public bool isPlayer;
-    
-    public int MapSize { get {return mapSize;} private set {} }
-
-    public void GenerateMap(int mapSize, int boatsCount)
-    {
-        if (mapSize * mapSize < boatsCount)
-        {
-            boatsCount = mapSize * mapSize - 1;
-        }
-
-        this.boatsCount = boatsCount;
-        this.mapSize = mapSize;
-
-        cells = new Cell[mapSize, mapSize];
-
-        for (int i = 0; i < mapSize; i++)
-        {
-            for (int j = 0; j < mapSize; j++)
-            {
-                cells[i, j] = new Cell();
-            }
-        }
-
-        PlaceBoats();
-    }
-
-    void PlaceBoats()
-    {
-        for (int i = 0; i < boatsCount; i++)
-        {
-            (int x, int y) = GenerateUniqueXY();
-
-            cells[x, y].isBoat = true;
-        }
-    }
-
-    (int, int) GenerateUniqueXY()
-    {
-        int x = random.Next(0, mapSize);
-        int y = random.Next(0, mapSize);
-
-        if (cells[x, y].isBoat)
-        {
-            return GenerateUniqueXY();
-        }
-
-        return (x, y);
-    }
-
-    public bool CanTakeShot(Field fieldOfAttack, int x, int y)
-    {
-        if (fieldOfAttack.cells[x, y].isShoted)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    public void TakeShot(Field fieldOfAttack, int x, int y)
-    {
-        if (!fieldOfAttack.cells[x, y].isShoted)
-        {
-            if (fieldOfAttack.cells[x, y].isBoat)
-            {
-                fieldOfAttack.boatsCount--;
-            }
-
-            fieldOfAttack.cells[x, y].isShoted = true;
-        }
-    }
-
-    public bool IsDefeat()
-    {
-        if (boatsCount <= 0)
-        {
-            return true;
-        }
-
-        return false;
-    }
-}
-
-public class Cell
-{
-    public Cell()
-    {
-        isBoat = false;
-        isShoted = false;
-    }
-
-    public bool isShoted;
-    public bool isBoat;
 }
