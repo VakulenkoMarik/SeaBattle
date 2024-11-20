@@ -21,69 +21,18 @@ public class Game
     {
         GenerateMaps();
 
+        Draw();
+
         while (!IsEndGame())
         {
+            GetInput();
+
             Logic();
+
+            Draw();
         }
 
         OutputResults();
-    }
-
-    void Logic()
-    {
-        if (!TryAttack(playerField, enemyField)) return;
-
-        TryAttack(enemyField, playerField);
-    }
-
-    bool TryAttack(Field attackedField, Field target)
-    {
-        bool isHit = false;
-
-        do
-        {
-            Draw();
-
-            DefineInputData(attackedField);
-
-            if (shotX < 0 || shotY < 0 || IsEndGame()) return false;
-
-            if (attackedField.CanTakeShot(target, shotX, shotY))
-            {
-                attackedField.TakeShot(target, shotX, shotY);
-
-                isHit = target.cells[shotX, shotY].isBoat;
-            }
-            else
-            {
-                return false;
-            }
-
-            CheckEnd();
-
-        } while (isHit == true && !IsEndGame());
-
-        return true;
-    }
-
-    void DefineInputData(Field field)
-    {
-        if (field.isPlayer)
-        {
-            GetInput();
-        }
-        else
-        {
-            (shotX, shotY) = GenerateXYEnemyShot(playerField);
-        }
-    }
-
-    void CheckEnd()
-    {
-        if (enemyField.IsDefeat() || playerField.IsDefeat())
-        {
-            isEndGame = true;
-        }
     }
 
     void GenerateMaps()
@@ -196,6 +145,24 @@ public class Game
         }
 
         return num - 1;
+    }
+
+    void Logic()
+    {
+        if (shotX < 0 || shotY < 0) return;
+
+        if (playerField.CanTakeShot(enemyField, shotX, shotY))
+        {
+            (int xEnemyShot, int yEnemyShot) = GenerateXYEnemyShot(playerField);
+
+            playerField.TakeShot(enemyField, shotX, shotY);
+            enemyField.TakeShot(playerField, xEnemyShot, yEnemyShot);
+        }
+
+        if (enemyField.IsDefeat() || playerField.IsDefeat())
+        {
+            isEndGame = true;
+        }
     }
 
     bool IsEndGame()
