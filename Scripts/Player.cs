@@ -12,7 +12,7 @@ public class Player
 
     public bool IsDefeat()
     {
-        return field.boatsCount <= 0;
+        return boatsCount <= 0;
     }
 
     public bool CanTakeShot(Field fieldOfAttack, int x, int y)
@@ -29,7 +29,7 @@ public class Player
     {
         if (field.GetCell(x, y).ShotAndFeedback())
         {
-            field.boatsCount--;
+            boatsCount--;
         }
     }
 
@@ -55,6 +55,6 @@ public class Player
             }
         }
 
-        Console.WriteLine($"\n Boats: {field.boatsCount}\n");
+        Console.WriteLine($"\n Boats: {boatsCount}\n");
     }
 }

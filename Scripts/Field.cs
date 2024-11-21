@@ -4,8 +4,6 @@ public class Field
     private Cell[,] cells = {};
 
     private int mapSize;
-    public int boatsCount;
-    
     public int MapSize { get {return mapSize;} private set {} }
 
     public void GenerateMap(int mapSize, int boatsCount)
@@ -15,7 +13,6 @@ public class Field
             boatsCount = mapSize * mapSize - 1;
         }
 
-        this.boatsCount = boatsCount;
         this.mapSize = mapSize;
 
         cells = new Cell[mapSize, mapSize];
@@ -28,10 +25,10 @@ public class Field
             }
         }
 
-        PlaceBoats();
+        PlaceBoats(boatsCount);
     }
 
-    private void PlaceBoats()
+    private void PlaceBoats(int boatsCount)
     {
         for (int i = 0; i < boatsCount; i++)
         {
@@ -52,19 +49,6 @@ public class Field
         }
 
         return (x, y);
-    }
-
-    public void TakeShot(Field fieldOfAttack, int x, int y)
-    {
-        if (!fieldOfAttack.cells[x, y].isShoted)
-        {
-            if (fieldOfAttack.cells[x, y].isBoat)
-            {
-                fieldOfAttack.boatsCount--;
-            }
-
-            fieldOfAttack.cells[x, y].isShoted = true;
-        }
     }
 
     public Cell GetCell(int x, int y)
