@@ -1,6 +1,7 @@
 public class Player
 {
     public bool isHuman = false;
+    public int shotX = -1, shotY = -1;
     public int boatsCount = 5;
 
     public Field field = new();
@@ -15,22 +16,25 @@ public class Player
         return boatsCount <= 0;
     }
 
-    public bool CanTakeShot(Field fieldOfAttack, int x, int y)
+    public bool CanTakeShot(Field fieldOfAttack)
     {
-        if (fieldOfAttack.GetCell(x, y).isShot)
+        if (shotX < 0 || shotY < 0)
         {
             return false;
         }
 
-        return true;
+        return !fieldOfAttack.GetCell(shotX, shotY).isShot;
     }
 
-    public void GetShot(int x, int y)
+    public bool DevastatingShot(int x, int y)
     {
-        if (field.GetCell(x, y).ShotAndFeedback())
+        if (field.GetCell(x, y).ShotHitShip())
         {
             boatsCount--;
+            return true;
         }
+
+        return false;
     }
 
     public void DrawMap()

@@ -68,7 +68,7 @@ public class Cell
     public bool isShot;
     public bool isShip;
 
-    public bool ShotAndFeedback()
+    public bool ShotHitShip()
     {
         if (!isShot)
         {

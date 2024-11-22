@@ -1,15 +1,20 @@
-using System.Collections;
-
 public class Game
 {
     private int mapsSize = 5;
-
-    private int shotX = -1, shotY = -1;
 
     private Random random = new();
 
     private Player player = new() {isHuman = true};
     private Player enemy = new();
+
+    private Player attacker;
+    private Player target;
+
+    public Game()
+    {
+        attacker = player;
+        target = enemy;
+    }
 
     public void Start()
     {
@@ -50,9 +55,33 @@ public class Game
 
     private void InputProcessing()
     {
+        if (attacker.isHuman)
+        {
+            ManualInput();
+            return;
+        }
+        
+        (attacker.shotX, attacker.shotY) = GenerateXYShot();
+    }
+
+    private void ManualInput()
+    {
         string? input = Console.ReadLine();
 
-        (shotX, shotY) = ReadInput(input);
+        (attacker.shotX, attacker.shotY) = ReadInput(input);
+    }
+
+    private (int, int) GenerateXYShot()
+    {
+        int x, y;
+
+        do
+        {
+            (x, y) = (random.Next(0, mapsSize), random.Next(0, mapsSize));
+        }
+        while (player.field.GetCell(x, y).isShot);
+
+        return (x, y);
     }
 
     private (int, int) ReadInput(string? input)
@@ -106,17 +135,14 @@ public class Game
 
     private void Logic()
     {
-        if (shotX < 0 || shotY < 0)
-        {
-            return;
-        }
+        Thread.Sleep(750);
 
-        if (player.CanTakeShot(enemy.field, shotX, shotY))
+        if (attacker.CanTakeShot(target.field))
         {
-            (int xEnemyShot, int yEnemyShot) = GenerateXYEnemyShot(player.field);
-
-            enemy.GetShot(shotX, shotY);
-            player.GetShot(xEnemyShot, yEnemyShot);
+            if (!target.DevastatingShot(attacker.shotX, attacker.shotY))
+            {
+                (attacker, target) = (target, attacker);
+            }
         }
     }
 
@@ -128,19 +154,6 @@ public class Game
         }
 
         return false;
-    }
-
-    private (int, int) GenerateXYEnemyShot(Field field)
-    {
-        int x, y;
-
-        do
-        {
-            (x, y) = (random.Next(0, mapsSize), random.Next(0, mapsSize));
-        }
-        while (field.GetCell(x, y).isShot);
-
-        return (x, y);
     }
 
     private void OutputResults()
