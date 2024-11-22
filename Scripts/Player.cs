@@ -17,7 +17,7 @@ public class Player
 
     public bool CanTakeShot(Field fieldOfAttack, int x, int y)
     {
-        if (fieldOfAttack.GetCell(x, y).isShoted)
+        if (fieldOfAttack.GetCell(x, y).isShot)
         {
             return false;
         }

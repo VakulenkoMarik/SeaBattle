@@ -34,7 +34,7 @@ public class Field
         {
             (int x, int y) = GenerateUniqueXY();
 
-            cells[x, y].isBoat = true;
+            cells[x, y].isShip = true;
         }
     }
 
@@ -43,7 +43,7 @@ public class Field
         int x = random.Next(0, mapSize);
         int y = random.Next(0, mapSize);
 
-        if (cells[x, y].isBoat)
+        if (cells[x, y].isShip)
         {
             return GenerateUniqueXY();
         }
@@ -61,20 +61,20 @@ public class Cell
 {
     public Cell()
     {
-        isBoat = false;
-        isShoted = false;
+        isShip = false;
+        isShot = false;
     }
 
-    public bool isShoted;
-    public bool isBoat;
+    public bool isShot;
+    public bool isShip;
 
     public bool ShotAndFeedback()
     {
-        if (!isShoted)
+        if (!isShot)
         {
-            isShoted = true;
+            isShot = true;
 
-            if (isBoat)
+            if (isShip)
             {
                 return true;
             }
@@ -85,18 +85,18 @@ public class Cell
 
     public char GetCellSymbol(bool isHuman)
     {
-        if (isBoat && isShoted)
+        if (isShip && isShot)
         {
             return 'X';
         }
         
-        if (isShoted)
+        if (isShot)
         {
             return 'O';
         }
         
         // Player
-        if (isBoat && isHuman)
+        if (isShip && isHuman)
         {
             return '#';
         }

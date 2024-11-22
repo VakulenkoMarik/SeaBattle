@@ -1,13 +1,15 @@
+using System.Collections;
+
 public class Game
 {
     private int mapsSize = 5;
 
     private int shotX = -1, shotY = -1;
 
-    private Random random = new Random();
+    private Random random = new();
 
-    private Player player = new Player() {isHuman = true};
-    private Player enemy = new Player();
+    private Player player = new() {isHuman = true};
+    private Player enemy = new();
 
     public void Start()
     {
@@ -136,7 +138,7 @@ public class Game
         {
             (x, y) = (random.Next(0, mapsSize), random.Next(0, mapsSize));
         }
-        while (field.GetCell(x, y).isShoted);
+        while (field.GetCell(x, y).isShot);
 
         return (x, y);
     }
