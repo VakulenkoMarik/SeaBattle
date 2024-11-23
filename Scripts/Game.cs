@@ -79,7 +79,7 @@ public class Game
         {
             (x, y) = (random.Next(0, mapsSize), random.Next(0, mapsSize));
         }
-        while (player.field.GetCell(x, y).isShot);
+        while (target.field.GetCell(x, y).isShot);
 
         return (x, y);
     }
