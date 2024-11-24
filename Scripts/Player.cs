@@ -28,7 +28,11 @@ public class Player
 
     public void GetShot(int x, int y)
     {
-        if (field.GetCell(x, y).isShip)
+        Cell targetCell = field.GetCell(x, y);
+        
+        targetCell.isShot = true;
+
+        if (targetCell.isShip)
         {
             boatsCount--;
         }
