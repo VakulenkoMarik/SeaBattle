@@ -26,15 +26,12 @@ public class Player
         return !fieldOfAttack.GetCell(shotX, shotY).isShot;
     }
 
-    public bool DevastatingShot(int x, int y)
+    public void GetShot(int x, int y)
     {
-        if (field.GetCell(x, y).ShotHitShip())
+        if (field.GetCell(x, y).isShip)
         {
             boatsCount--;
-            return true;
         }
-
-        return false;
     }
 
     public void DrawMap()

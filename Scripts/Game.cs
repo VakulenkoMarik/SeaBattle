@@ -139,11 +139,20 @@ public class Game
 
         if (attacker.CanTakeShot(target.field))
         {
-            if (!target.DevastatingShot(attacker.shotX, attacker.shotY))
+            target.GetShot(attacker.shotX, attacker.shotY);
+
+            Cell targetCell = target.field.GetCell(attacker.shotX, attacker.shotY);
+
+            if (!targetCell.isShip)
             {
-                (attacker, target) = (target, attacker);
+                NextPlayerMoves();
             }
         }
+    }
+
+    private void NextPlayerMoves()
+    {
+        (attacker, target) = (target, attacker);
     }
 
     private bool IsEndGame()
