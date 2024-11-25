@@ -1,6 +1,7 @@
 public class Player
 {
     public bool isHuman = false;
+
     public int shotX = -1, shotY = -1;
     public int boatsCount = 5;
 
@@ -24,18 +25,6 @@ public class Player
         }
 
         return !fieldOfAttack.GetCell(shotX, shotY).isShot;
-    }
-
-    public void GetShot(int x, int y)
-    {
-        Cell targetCell = field.GetCell(x, y);
-        
-        targetCell.isShot = true;
-
-        if (targetCell.isShip)
-        {
-            boatsCount--;
-        }
     }
 
     public void DrawMap()

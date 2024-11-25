@@ -9,6 +9,11 @@ public class Cell
     public bool isShot;
     public bool isShip;
 
+    public void GetShot()
+    {
+        isShot = true;
+    }
+
     public char GetCellSymbol(bool isHuman)
     {
         if (isShip && isShot)

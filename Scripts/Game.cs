@@ -71,19 +71,6 @@ public class Game
         (attacker.shotX, attacker.shotY) = ReadInput(input);
     }
 
-    private (int, int) GenerateXYShot()
-    {
-        int x, y;
-
-        do
-        {
-            (x, y) = (random.Next(0, mapsSize), random.Next(0, mapsSize));
-        }
-        while (target.field.GetCell(x, y).isShot);
-
-        return (x, y);
-    }
-
     private (int, int) ReadInput(string? input)
     {
         if (string.IsNullOrEmpty(input))
@@ -95,6 +82,19 @@ public class Game
         int numIndex = GetNumIndex(input);
 
         return (letterIndex, numIndex);
+    }
+
+    private (int, int) GenerateXYShot()
+    {
+        int x, y;
+
+        do
+        {
+            (x, y) = (random.Next(0, mapsSize), random.Next(0, mapsSize));
+        }
+        while (target.field.GetCell(x, y).isShot);
+
+        return (x, y);
     }
 
     private int GetLetterIndex(string input)
@@ -139,14 +139,18 @@ public class Game
 
         if (attacker.CanTakeShot(target.field))
         {
-            target.GetShot(attacker.shotX, attacker.shotY);
-
             Cell targetCell = target.field.GetCell(attacker.shotX, attacker.shotY);
 
-            if (!targetCell.isShip)
+            targetCell.GetShot();
+
+            if (targetCell.isShip)
             {
-                NextPlayerMoves();
+                target.boatsCount--;
+
+                return;
             }
+
+            NextPlayerMoves();
         }
     }
 
