@@ -49,7 +49,7 @@ public class Player
 
     public void DrawHiddenMap(int x, int y, int radius)
     {
-        Drawer.DrawMap(field, isHuman, x, y, radius, true);
+        Drawer.DrawMap(field, isHuman, x, y, radius);
     }
 
     public void DrawMap()

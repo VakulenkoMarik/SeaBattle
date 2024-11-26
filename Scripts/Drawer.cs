@@ -1,6 +1,6 @@
 public static class Drawer
 {
-    public static void DrawMap(Field field, bool isHuman, int x = -1, int y = -1, int radius = -1, bool highlightArea = false)
+    public static void DrawMap(Field field, bool isHuman, int radarX = -1, int radarY = -1, int radius = -1)
     {
         DrawUp(field);
 
@@ -13,9 +13,9 @@ public static class Drawer
                 Cell cell = field.GetCell(j, i);
                 char cellChar;
 
-                if (highlightArea)
+                if (radarX >= 0 && radarY >= 0)
                 {
-                    cellChar = RadarCell(j, i, x, y, radius, cell);
+                    cellChar = RadarCell(j, i, radarX, radarY, radius, cell);
                 }
                 else
                 {
