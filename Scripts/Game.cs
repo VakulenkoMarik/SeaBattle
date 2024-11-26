@@ -1,6 +1,6 @@
 public class Game
 {
-    private int mapsSize = 5;
+    private int mapsSize = 7;
 
     private Random random = new();
 
@@ -61,14 +61,24 @@ public class Game
             return;
         }
         
-        (attacker.shotX, attacker.shotY) = GenerateXYShot();
+        (attacker.actionX, attacker.actionY) = GenerateXYShot();
     }
 
     private void ManualInput()
     {
         string? input = Console.ReadLine();
 
-        (attacker.shotX, attacker.shotY) = ReadInput(input);
+        if (input == "R")
+        {
+            if (attacker.CanUseRadar())
+            {
+                input = Console.ReadLine();
+
+                attacker.usesRadar = true;
+            }
+        }
+
+        (attacker.actionX, attacker.actionY) = ReadInput(input);
     }
 
     private (int, int) ReadInput(string? input)
@@ -135,23 +145,43 @@ public class Game
 
     private void Logic()
     {
+        if (attacker.actionX < 0 || attacker.actionY < 0)
+        {
+            return;
+        }
+
         Thread.Sleep(750);
 
-        if (attacker.CanTakeShot(target.field))
+        if (attacker.usesRadar)
         {
-            Cell targetCell = target.field.GetCell(attacker.shotX, attacker.shotY);
-
-            targetCell.GetShot();
-
-            if (targetCell.isShip)
-            {
-                target.boatsCount--;
-
-                return;
-            }
-
-            NextPlayerMoves();
+            RadarEspionage();
         }
+        else if (attacker.CanTakeShot(target.field))
+        {
+            ProcessShot();
+        }
+    }
+
+    private void RadarEspionage()
+    {
+        attacker.UseRadar(target);
+
+        NextPlayerMoves();
+    }
+
+    private void ProcessShot()
+    {
+        Cell targetCell = target.field.GetCell(attacker.actionX, attacker.actionY);
+        targetCell.GetShot();
+
+        if (targetCell.isShip)
+        {
+            target.boatsCount--;
+
+            return;
+        }
+        
+        NextPlayerMoves();
     }
 
     private void NextPlayerMoves()

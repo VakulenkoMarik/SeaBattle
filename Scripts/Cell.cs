@@ -14,7 +14,7 @@ public class Cell
         isShot = true;
     }
 
-    public char GetCellSymbol(bool isHuman)
+    public char GetCellSymbol(bool showShips)
     {
         if (isShip && isShot)
         {
@@ -27,7 +27,7 @@ public class Cell
         }
         
         // Player
-        if (isShip && isHuman)
+        if (isShip && showShips)
         {
             return '#';
         }
