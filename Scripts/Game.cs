@@ -10,12 +10,6 @@ public class Game
     private Player attacker;
     private Player target;
 
-    public Game()
-    {
-        attacker = player;
-        target = enemy;
-    }
-
     public void Start()
     {
         GameCycle();
@@ -23,9 +17,7 @@ public class Game
 
     private void GameCycle()
     {
-        GenerateMaps();
-
-        Draw();
+        Init();
 
         while (!IsEndGame())
         {
@@ -39,6 +31,16 @@ public class Game
         OutputResults();
     }
 
+    private void Init()
+    {
+        attacker = player;
+        target = enemy;
+
+        GenerateMaps();
+
+        Draw();
+    }
+
     private void GenerateMaps()
     {
         player.GenerateField(mapsSize);
@@ -49,8 +51,8 @@ public class Game
     {
         Console.Clear();
 
-        player.DrawMap();
-        enemy.DrawMap();
+        Drawer.DrawMap(player);
+        Drawer.DrawMap(enemy);
     }
 
     private void InputProcessing()
@@ -152,36 +154,10 @@ public class Game
 
         Thread.Sleep(750);
 
-        if (attacker.usesRadar)
+        if (attacker.LastAttackOver(target))
         {
-            RadarEspionage();
+            NextPlayerMoves();
         }
-        else if (attacker.CanTakeShot(target.field))
-        {
-            ProcessShot();
-        }
-    }
-
-    private void RadarEspionage()
-    {
-        attacker.UseRadar(target);
-
-        NextPlayerMoves();
-    }
-
-    private void ProcessShot()
-    {
-        Cell targetCell = target.field.GetCell(attacker.actionX, attacker.actionY);
-        targetCell.GetShot();
-
-        if (targetCell.isShip)
-        {
-            target.boatsCount--;
-
-            return;
-        }
-        
-        NextPlayerMoves();
     }
 
     private void NextPlayerMoves()

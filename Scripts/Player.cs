@@ -4,6 +4,7 @@ public class Player
 
     public bool isHuman = false;
     public bool usesRadar = false;
+    private bool endTurn = true;
 
     public int boatsCount = 5;
     public int radarsCount = 1;
@@ -25,36 +26,50 @@ public class Player
         return radarsCount > 0 && !usesRadar;
     }
 
-    public void UseRadar(Player target)
+    public bool LastAttackOver(Player target)
+    {
+        endTurn = true;
+
+        if (usesRadar)
+        {
+            RadarEspionage(target);
+        }
+        else if (CanTakeShot(target.field))
+        {
+            ProcessShot(target);
+        }
+
+        return endTurn;
+    }
+
+    private void RadarEspionage(Player target)
     {
         usesRadar = false;
         radarsCount--;
 
-        DrawRadarMap(target);
+        endTurn = true;
+
+        Drawer.DrawMap(target, false, 1, actionX, actionY);
+
+        Thread.Sleep(5000);
+    }
+
+    private void ProcessShot(Player target)
+    {
+        Cell targetCell = target.field.GetCell(actionX, actionY);
+        targetCell.GetShot();
+
+        if (targetCell.isShip)
+        {
+            target.boatsCount--;
+            endTurn = false;
+
+            return;
+        }
     }
 
     public bool CanTakeShot(Field fieldOfAttack)
     {
         return !fieldOfAttack.GetCell(actionX, actionY).isShot;
-    }
-
-    public void DrawRadarMap(Player player)
-    {
-        Console.Clear();
-
-        player.DrawHiddenMap(actionX, actionY, 1);
-
-        Thread.Sleep(5000);
-    }
-
-    public void DrawHiddenMap(int x, int y, int radius)
-    {
-        Drawer.DrawMap(field, isHuman, x, y, radius);
-    }
-
-    public void DrawMap()
-    {
-        Drawer.DrawMap(field, isHuman);
-        Drawer.WriteTools(boatsCount, radarsCount, usesRadar, isHuman);
     }
 }

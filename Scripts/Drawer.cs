@@ -1,25 +1,34 @@
 public static class Drawer
 {
-    public static void DrawMap(Field field, bool isHuman, int radarX = -1, int radarY = -1, int radius = -1)
+    public static void DrawMap(Player player, bool drawTools = true, int radarRadius = -1, int rX = -1, int rY = -1)
     {
-        DrawUp(field);
+        if (radarRadius > 0)
+        {
+            Console.Clear();
 
-        for (int i = 0; i < field.MapSize; i++)
+            Console.WriteLine(rX + " " + rY);
+        }
+
+        DrawUp(player.field);
+
+        int size = player.field.MapSize;
+
+        for (int i = 0; i < size; i++)
         {
             Console.Write($"\n{i + 1} ");
 
-            for (int j = 0; j < field.MapSize; j++)
+            for (int j = 0; j < size; j++)
             {
-                Cell cell = field.GetCell(j, i);
+                Cell cell = player.field.GetCell(j, i);
                 char cellChar;
 
-                if (radarX >= 0 && radarY >= 0)
+                if (radarRadius > 0)
                 {
-                    cellChar = RadarCell(j, i, radarX, radarY, radius, cell);
+                    cellChar = RadarCell(j, i, rX, rY, radarRadius, cell);
                 }
                 else
                 {
-                    cellChar = cell.GetCellSymbol(isHuman);
+                    cellChar = cell.GetCellSymbol(player.isHuman);
                 }
 
                 Console.Write(cellChar);
@@ -27,17 +36,22 @@ public static class Drawer
                 Console.ForegroundColor = ConsoleColor.White;
             }
         }
+
+        if (drawTools)
+        {
+            WriteTools(player);
+        }
     }
 
-    public static void WriteTools(int boatsCount, int radarsCount, bool usesRadar, bool isHuman)
+    public static void WriteTools(Player player)
     {
         Console.ForegroundColor = ConsoleColor.Blue;
 
-        Console.WriteLine($"\n Boats: {boatsCount}");
+        Console.WriteLine($"\n Boats: {player.boatsCount}");
 
-        if (isHuman)
+        if (player.isHuman)
         {
-            Console.WriteLine($" Radars: {radarsCount}, is currently in use: {usesRadar}\n");
+            Console.WriteLine($" Radars: {player.radarsCount}, is currently in use: {player.usesRadar}\n");
         }
     }
 
