@@ -1,1 +1,1 @@
-new Game().Start();
+new Game().Start(Gamemode.PvP);

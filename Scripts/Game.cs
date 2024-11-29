@@ -1,24 +1,32 @@
+public enum Gamemode
+{
+    PvP,
+    PvE,
+    EvE,
+}
+
 public class Game
 {
+    private Gamemode gamemode;
     private int mapsSize = 7;
 
     private Random random = new();
 
-    private Player player = new() {isHuman = true};
-    private Player enemy = new();
+    private Player player1;
+    private Player player2;
 
     private Player attacker;
     private Player target;
 
-    public void Start()
+    public void Start(Gamemode gm)
     {
+        Init(gm);
+
         GameCycle();
     }
 
     private void GameCycle()
     {
-        Init();
-
         while (!IsEndGame())
         {
             InputProcessing();
@@ -31,28 +39,43 @@ public class Game
         OutputResults();
     }
 
-    private void Init()
+    private void Init(Gamemode gamemode)
     {
-        attacker = player;
-        target = enemy;
+        this.gamemode = gamemode;
+
+        ConnectPlayers();
+
+        attacker = player1;
+        target = player2;
 
         GenerateMaps();
 
         Draw();
     }
 
+    private void ConnectPlayers()
+    {
+        _ = (player1, player2) = gamemode switch
+        {
+            Gamemode.PvP => (new Player() { showShips = false, isHuman = true }, new Player() { showShips = false, isHuman = true }),
+            Gamemode.PvE => (new Player() { showShips = false }, new Player()),
+            Gamemode.EvE => (new Player(), new Player())
+        };
+    }
+
     private void GenerateMaps()
     {
-        player.GenerateField(mapsSize);
-        enemy.GenerateField(mapsSize);
+        player1.GenerateField(mapsSize);
+        player2.GenerateField(mapsSize);
     }
 
     private void Draw()
     {
         Console.Clear();
 
-        Drawer.DrawMap(player);
-        Drawer.DrawMap(enemy);
+        Drawer.DrawMap(player1);
+        Console.WriteLine(" ");
+        Drawer.DrawMap(player2);
     }
 
     private void InputProcessing()
@@ -167,7 +190,7 @@ public class Game
 
     private bool IsEndGame()
     {
-        if (enemy.IsDefeat() || player.IsDefeat())
+        if (player2.IsDefeat() || player1.IsDefeat())
         {
             return true;
         }
@@ -184,9 +207,9 @@ public class Game
 
     private string BattleResult()
     {
-        if (player.IsDefeat())
+        if (player1.IsDefeat())
         {
-            if (enemy.IsDefeat())
+            if (player2.IsDefeat())
             {
                 return "Draw";
             }

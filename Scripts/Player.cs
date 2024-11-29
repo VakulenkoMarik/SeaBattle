@@ -3,22 +3,23 @@ public class Player
     public int actionX = -1, actionY = -1;
 
     public bool isHuman = false;
+    public bool showShips = true;
     public bool usesRadar = false;
     private bool endTurn = true;
 
-    public int boatsCount = 5;
+    public int shipsCount = 5;
     public int radarsCount = 1;
 
     public Field field = new();
 
     public void GenerateField(int mapSize)
     {
-        field.GenerateMap(mapSize, boatsCount);
+        field.GenerateMap(mapSize, shipsCount);
     }
 
     public bool IsDefeat()
     {
-        return boatsCount <= 0;
+        return shipsCount <= 0;
     }
 
     public bool CanUseRadar()
@@ -37,6 +38,10 @@ public class Player
         else if (CanTakeShot(target.field))
         {
             ProcessShot(target);
+        }
+        else
+        {
+            endTurn = false;
         }
 
         return endTurn;
@@ -61,7 +66,7 @@ public class Player
 
         if (targetCell.isShip)
         {
-            target.boatsCount--;
+            target.shipsCount--;
             endTurn = false;
 
             return;

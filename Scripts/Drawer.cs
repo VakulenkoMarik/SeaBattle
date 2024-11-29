@@ -28,7 +28,7 @@ public static class Drawer
                 }
                 else
                 {
-                    cellChar = cell.GetCellSymbol(player.isHuman);
+                    cellChar = cell.GetCellSymbol(player.showShips);
                 }
 
                 Console.Write(cellChar);
@@ -47,7 +47,7 @@ public static class Drawer
     {
         Console.ForegroundColor = ConsoleColor.Blue;
 
-        Console.WriteLine($"\n Boats: {player.boatsCount}");
+        Console.WriteLine($"\n Boats: {player.shipsCount}");
 
         if (player.isHuman)
         {
