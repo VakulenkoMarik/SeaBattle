@@ -58,7 +58,7 @@ public class Game
         _ = (player1, player2) = gamemode switch
         {
             Gamemode.PvP => (new Player() { showShips = false, isHuman = true }, new Player() { showShips = false, isHuman = true }),
-            Gamemode.PvE => (new Player() { showShips = false }, new Player()),
+            Gamemode.PvE => (new Player() { showShips = true, isHuman = true }, new Player()),
             Gamemode.EvE => (new Player(), new Player())
         };
     }

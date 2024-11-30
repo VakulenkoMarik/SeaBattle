@@ -3,7 +3,7 @@ public class Player
     public int actionX = -1, actionY = -1;
 
     public bool isHuman = false;
-    public bool showShips = true;
+    public bool showShips = false;
     public bool usesRadar = false;
     private bool endTurn = true;
 

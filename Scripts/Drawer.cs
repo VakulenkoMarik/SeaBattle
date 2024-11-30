@@ -5,8 +5,6 @@ public static class Drawer
         if (radarRadius > 0)
         {
             Console.Clear();
-
-            Console.WriteLine(rX + " " + rY);
         }
 
         DrawUp(player.field);
