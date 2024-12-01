@@ -3,7 +3,6 @@ public class Player
     public int actionX = -1, actionY = -1;
 
     public bool isHuman = false;
-    public bool showShips = false;
     public bool usesRadar = false;
     private bool endTurn = true;
 
@@ -54,7 +53,7 @@ public class Player
 
         endTurn = true;
 
-        Drawer.DrawMap(target, false, 1, actionX, actionY);
+        Drawer.DrawMap(target, 1, actionX, actionY);
 
         Thread.Sleep(5000);
     }
@@ -68,8 +67,6 @@ public class Player
         {
             target.shipsCount--;
             endTurn = false;
-
-            return;
         }
     }
 

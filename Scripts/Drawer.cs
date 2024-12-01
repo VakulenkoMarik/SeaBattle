@@ -1,6 +1,19 @@
 public static class Drawer
 {
-    public static void DrawMap(Player player, bool drawTools = true, int radarRadius = -1, int rX = -1, int rY = -1)
+    private static Gamemode gamemode;
+
+    public static void SetDrawerMode(Gamemode gm)
+    {
+        gamemode = gm;
+    }
+
+    public static void DrawFullMap(Player player)
+    {
+        DrawMap(player);
+        WriteResources(player);
+    }
+
+    public static void DrawMap(Player player, int radarRadius = -1, int radiusX = -1, int radiusY = -1)
     {
         if (radarRadius > 0)
         {
@@ -22,11 +35,18 @@ public static class Drawer
 
                 if (radarRadius > 0)
                 {
-                    cellChar = RadarCell(j, i, rX, rY, radarRadius, cell);
+                    cellChar = RadarCell(j, i, radiusX, radiusY, radarRadius, cell);
                 }
                 else
                 {
-                    cellChar = cell.GetCellSymbol(player.showShips);
+                    bool showOriginal = player.isHuman;
+
+                    if (gamemode != Gamemode.PvE)
+                    {
+                        showOriginal = !player.isHuman;
+                    }
+                    
+                    cellChar = cell.GetCellSymbol(showOriginal);
                 }
 
                 Console.Write(cellChar);
@@ -34,14 +54,9 @@ public static class Drawer
                 Console.ForegroundColor = ConsoleColor.White;
             }
         }
-
-        if (drawTools)
-        {
-            WriteTools(player);
-        }
     }
 
-    public static void WriteTools(Player player)
+    public static void WriteResources(Player player)
     {
         Console.ForegroundColor = ConsoleColor.Blue;
 

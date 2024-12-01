@@ -42,6 +42,7 @@ public class Game
     private void Init(Gamemode gamemode)
     {
         this.gamemode = gamemode;
+        Drawer.SetDrawerMode(gamemode);
 
         ConnectPlayers();
 
@@ -55,12 +56,28 @@ public class Game
 
     private void ConnectPlayers()
     {
-        _ = (player1, player2) = gamemode switch
+        (player1, player2) = gamemode switch
         {
-            Gamemode.PvP => (new Player() { showShips = false, isHuman = true }, new Player() { showShips = false, isHuman = true }),
-            Gamemode.PvE => (new Player() { showShips = true, isHuman = true }, new Player()),
-            Gamemode.EvE => (new Player(), new Player())
+            Gamemode.PvP => (MakeHumanPlayer(), MakeHumanPlayer()),
+            Gamemode.PvE => (MakeHumanPlayer(), MakeBotPlayer()),
+            Gamemode.EvE => (MakeBotPlayer(), MakeBotPlayer()),
+            _ => (player1, player2)
         };
+    }
+
+    private Player MakeHumanPlayer()
+    {
+        return new() { isHuman = true };
+    }
+
+    private Player MakeBotPlayer()
+    {
+        return new();
+    }
+
+    private (Player, Player) CreatePlayers(bool isP1Human, bool isP2Human)
+    {
+        return (new Player() { isHuman = isP1Human }, new Player() { isHuman = isP2Human });
     }
 
     private void GenerateMaps()
@@ -73,9 +90,9 @@ public class Game
     {
         Console.Clear();
 
-        Drawer.DrawMap(player1);
+        Drawer.DrawFullMap(player1);
         Console.WriteLine(" ");
-        Drawer.DrawMap(player2);
+        Drawer.DrawFullMap(player2);
     }
 
     private void InputProcessing()
