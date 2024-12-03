@@ -6,22 +6,14 @@ public class Player
     public bool usesRadar = false;
     private bool endTurn = true;
 
-    public int shipsCount { get; private set; } = 5;
-    public int radarsCount { get; private set; } = 1;
-
-    public int roundsWon = 0;
+    public int shipsCount = 5;
+    public int radarsCount = 1;
 
     public Field field = new();
 
     public void GenerateField(int mapSize)
     {
         field.GenerateMap(mapSize, shipsCount);
-    }
-
-    public void SetPlayerResources(int radars, int ships)
-    {
-        radarsCount = radars;
-        shipsCount = ships;
     }
 
     public bool IsDefeat()
