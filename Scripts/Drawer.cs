@@ -39,14 +39,7 @@ public static class Drawer
                 }
                 else
                 {
-                    bool showOriginal = player.isHuman;
-
-                    if (gamemode != Gamemode.PvE)
-                    {
-                        showOriginal = !player.isHuman;
-                    }
-                    
-                    cellChar = cell.GetCellSymbol(showOriginal);
+                    cellChar = DetermineShowingCell(player, cell);
                 }
 
                 Console.Write(cellChar);
@@ -95,6 +88,30 @@ public static class Drawer
             Thread.Sleep(50);
 
             return '~';
+        }
+    }
+    
+    private static char DetermineShowingCell(Player player, Cell cell)
+    {
+        bool isHumanForModes = player.isHuman;
+
+        if (gamemode != Gamemode.PvE)
+        {
+            isHumanForModes = !player.isHuman;
+        }
+            
+        return cell.GetCellSymbol(isHumanForModes);
+    }
+    
+    public static void DrawOnlyText(string text, int time = -1)
+    {
+        Console.Clear();
+
+        Console.WriteLine($"\n{text}");
+
+        if (time > 0)
+        {
+            Thread.Sleep(time);
         }
     }
 }

@@ -8,7 +8,10 @@ public enum Gamemode
 public class Game
 {
     private Gamemode gamemode;
-    private int mapsSize = 7;
+
+    private int mapsSize = 5;
+    private int rounds = 3;
+    private int currentRound = 0;
 
     private Random random = new();
 
@@ -29,14 +32,10 @@ public class Game
     {
         while (!IsEndGame())
         {
-            InputProcessing();
-
-            Logic();
-
-            Draw();
+            StartNewRound();
         }
 
-        OutputResults();
+        EndResultsProcesing();
     }
 
     private void Init(Gamemode gamemode)
@@ -44,17 +43,54 @@ public class Game
         this.gamemode = gamemode;
         Drawer.SetDrawerMode(gamemode);
 
-        ConnectPlayers();
+        SetPlayers();
+    }
+
+    public void StartNewRound()
+    {
+        InitRound();
+
+        RoundCycle();
+    }
+
+    private void InitRound()
+    {
+        currentRound++;
 
         attacker = player1;
         target = player2;
+
+        ResourcesToPlayers();
 
         GenerateMaps();
 
         Draw();
     }
 
-    private void ConnectPlayers()
+    private void ResourcesToPlayers()
+    {
+        int radars = 1;
+        int ships = 5;
+
+        player1.SetPlayerResources(radars, ships);
+        player2.SetPlayerResources(radars, ships);
+    }
+
+    private void RoundCycle()
+    {
+        while (!IsEndRound())
+        {
+            InputProcessing();
+
+            Logic();
+
+            Draw();
+        }
+
+        RoundResultProcesing();
+    }
+
+    private void SetPlayers()
     {
         (player1, player2) = gamemode switch
         {
@@ -73,11 +109,6 @@ public class Game
     private Player MakeBotPlayer()
     {
         return new();
-    }
-
-    private (Player, Player) CreatePlayers(bool isP1Human, bool isP2Human)
-    {
-        return (new Player() { isHuman = isP1Human }, new Player() { isHuman = isP2Human });
     }
 
     private void GenerateMaps()
@@ -205,35 +236,67 @@ public class Game
         (attacker, target) = (target, attacker);
     }
 
+    private bool IsEndRound()
+    {
+        return player2.IsDefeat() || player1.IsDefeat();
+    }
+
     private bool IsEndGame()
     {
-        if (player2.IsDefeat() || player1.IsDefeat())
+        return currentRound >= rounds;
+    }
+
+    private void EndResultsProcesing()
+    {
+        string outputText = "BATTLE WINER IS ";
+
+        outputText += player1.roundsWon > player2.roundsWon ? "PLAYER 1" : "PLAYER 2";
+
+        Drawer.DrawOnlyText(outputText);
+    }
+
+    private void RoundResultProcesing()
+    {
+        Thread.Sleep(2000);
+
+        Player? winer = CheckRoundWiner();
+
+        if (winer != null)
         {
-            return true;
+            winer.roundsWon++;
+        }
+        
+        OutputRoundResult(winer);
+    }
+
+    private void OutputRoundResult(Player? winer)
+    {
+        string endText = "";
+
+        if (winer == null)
+        {
+            endText = "Draw";
+        }
+        else
+        {
+            endText = $"Player {(winer == player1 ? 1 : 2)} is winer   ({player1.roundsWon} / {player2.roundsWon})";
         }
 
-        return false;
+        Drawer.DrawOnlyText(endText, 2000);
     }
 
-    private void OutputResults()
-    {
-        string result = BattleResult();
-
-        Console.WriteLine($"\n{result}");
-    }
-
-    private string BattleResult()
+    private Player? CheckRoundWiner()
     {
         if (player1.IsDefeat())
         {
             if (player2.IsDefeat())
             {
-                return "Draw";
+                return null;
             }
 
-            return "Player lost";
+            return player2;
         }
 
-        return "Enemy lost";
+        return player1;
     }
 }
