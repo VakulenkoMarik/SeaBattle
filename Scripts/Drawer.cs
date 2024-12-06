@@ -1,25 +1,34 @@
-public static class Drawer
+public class Drawer
 {
-    private static Gamemode gamemode;
+    private Gamemode gamemode;
 
-    public static void SetDrawerMode(Gamemode gm)
+    private Player player1;
+    private Player player2;
+
+    public Drawer (Gamemode gm, Player p1, Player p2)
     {
         gamemode = gm;
+        player1 = p1;
+        player2 = p2;
     }
 
-    public static void DrawFullMap(Player player)
+    public void DrawFields()
+    {
+        DrawPlayerField(player1);
+        
+        Console.WriteLine(" ");
+
+        DrawPlayerField(player2);
+    }
+
+    private void DrawPlayerField(Player player)
     {
         DrawMap(player);
         WriteResources(player);
     }
 
-    public static void DrawMap(Player player, int radarRadius = -1, int radiusX = -1, int radiusY = -1)
+    private void DrawMap(Player player)
     {
-        if (radarRadius > 0)
-        {
-            Console.Clear();
-        }
-
         DrawUp(player.field);
 
         int size = player.field.MapSize;
@@ -30,25 +39,16 @@ public static class Drawer
 
             for (int j = 0; j < size; j++)
             {
+                bool isHumanForModes = player.isHuman;
+
+                if (gamemode != Gamemode.PvE)
+                {
+                    isHumanForModes = !player.isHuman;
+                }
+
                 Cell cell = player.field.GetCell(j, i);
-                char cellChar;
-
-                if (radarRadius > 0)
-                {
-                    cellChar = RadarCell(j, i, radiusX, radiusY, radarRadius, cell);
-                }
-                else
-                {
-                    bool showOriginal = player.isHuman;
-
-                    if (gamemode != Gamemode.PvE)
-                    {
-                        showOriginal = !player.isHuman;
-                    }
-                    
-                    cellChar = cell.GetCellSymbol(showOriginal);
-                }
-
+                char cellChar = cell.GetCellSymbol(isHumanForModes);
+                
                 Console.Write(cellChar);
 
                 Console.ForegroundColor = ConsoleColor.White;
@@ -56,19 +56,14 @@ public static class Drawer
         }
     }
 
-    public static void WriteResources(Player player)
+    private void WriteResources(Player player)
     {
         Console.ForegroundColor = ConsoleColor.Blue;
 
         Console.WriteLine($"\n Boats: {player.shipsCount}");
-
-        if (player.isHuman)
-        {
-            Console.WriteLine($" Radars: {player.radarsCount}, is currently in use: {player.usesRadar}\n");
-        }
     }
 
-    private static void DrawUp(Field field)
+    private void DrawUp(Field field)
     {
         Console.ForegroundColor = ConsoleColor.White;
 
@@ -77,24 +72,6 @@ public static class Drawer
         for (char c = 'a'; c < 'a' + field.MapSize; c++)
         {
             Console.Write(c + "");
-        }
-    }
-
-    private static char RadarCell(int currentX, int currentY, int radarX, int radarY, int radius, Cell cell)
-    {
-        if (Math.Abs(currentX - radarX) <= radius && Math.Abs(currentY - radarY) <= radius)
-        {
-            Thread.Sleep(200);
-        
-            Console.ForegroundColor = ConsoleColor.Green;
-
-            return cell.GetCellSymbol(true);
-        }
-        else
-        {
-            Thread.Sleep(50);
-
-            return '~';
         }
     }
 }

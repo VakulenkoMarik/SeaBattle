@@ -3,11 +3,9 @@ public class Player
     public int actionX = -1, actionY = -1;
 
     public bool isHuman = false;
-    public bool usesRadar = false;
     private bool endTurn = true;
 
     public int shipsCount = 5;
-    public int radarsCount = 1;
 
     public Field field = new();
 
@@ -21,20 +19,11 @@ public class Player
         return shipsCount <= 0;
     }
 
-    public bool CanUseRadar()
-    {
-        return radarsCount > 0 && !usesRadar;
-    }
-
     public bool LastAttackOver(Player target)
     {
         endTurn = true;
 
-        if (usesRadar)
-        {
-            RadarEspionage(target);
-        }
-        else if (CanTakeShot(target.field))
+        if (CanTakeShot(target.field))
         {
             ProcessShot(target);
         }
@@ -44,18 +33,6 @@ public class Player
         }
 
         return endTurn;
-    }
-
-    private void RadarEspionage(Player target)
-    {
-        usesRadar = false;
-        radarsCount--;
-
-        endTurn = true;
-
-        Drawer.DrawMap(target, 1, actionX, actionY);
-
-        Thread.Sleep(5000);
     }
 
     private void ProcessShot(Player target)

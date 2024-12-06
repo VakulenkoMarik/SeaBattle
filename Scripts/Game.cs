@@ -8,7 +8,7 @@ public enum Gamemode
 public class Game
 {
     private Gamemode gamemode;
-    private int mapsSize = 7;
+    private int mapsSize = 5;
 
     private Random random = new();
 
@@ -17,6 +17,8 @@ public class Game
 
     private Player attacker;
     private Player target;
+
+    private Drawer drawer;
 
     public void Start(Gamemode gm)
     {
@@ -42,19 +44,24 @@ public class Game
     private void Init(Gamemode gamemode)
     {
         this.gamemode = gamemode;
-        Drawer.SetDrawerMode(gamemode);
-
-        ConnectPlayers();
+        
+        SetPlayers();
 
         attacker = player1;
         target = player2;
+
+        drawer = new Drawer(
+            gamemode,
+            player1,
+            player2
+        );
 
         GenerateMaps();
 
         Draw();
     }
 
-    private void ConnectPlayers()
+    private void SetPlayers()
     {
         (player1, player2) = gamemode switch
         {
@@ -75,11 +82,6 @@ public class Game
         return new();
     }
 
-    private (Player, Player) CreatePlayers(bool isP1Human, bool isP2Human)
-    {
-        return (new Player() { isHuman = isP1Human }, new Player() { isHuman = isP2Human });
-    }
-
     private void GenerateMaps()
     {
         player1.GenerateField(mapsSize);
@@ -90,9 +92,7 @@ public class Game
     {
         Console.Clear();
 
-        Drawer.DrawFullMap(player1);
-        Console.WriteLine(" ");
-        Drawer.DrawFullMap(player2);
+        drawer.DrawFields();
     }
 
     private void InputProcessing()
@@ -109,16 +109,6 @@ public class Game
     private void ManualInput()
     {
         string? input = Console.ReadLine();
-
-        if (input == "R")
-        {
-            if (attacker.CanUseRadar())
-            {
-                input = Console.ReadLine();
-
-                attacker.usesRadar = true;
-            }
-        }
 
         (attacker.actionX, attacker.actionY) = ReadInput(input);
     }
