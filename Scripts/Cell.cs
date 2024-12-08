@@ -1,13 +1,7 @@
 public class Cell
 {
-    public Cell()
-    {
-        isShip = false;
-        isShot = false;
-    }
-
-    public bool isShot;
-    public bool isShip;
+    public bool isShot = false;
+    public bool isShip = false;
 
     public void GetShot()
     {

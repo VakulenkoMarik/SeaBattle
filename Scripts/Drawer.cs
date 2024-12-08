@@ -1,16 +1,9 @@
-public class Drawer
+public class Drawer(Gamemode gm, Player p1, Player p2)
 {
-    private Gamemode gamemode;
+    private readonly Gamemode gamemode = gm;
 
-    private Player player1;
-    private Player player2;
-
-    public Drawer (Gamemode gm, Player p1, Player p2)
-    {
-        gamemode = gm;
-        player1 = p1;
-        player2 = p2;
-    }
+    private readonly Player player1 = p1;
+    private readonly Player player2 = p2;
 
     public void DrawFields()
     {
@@ -23,11 +16,18 @@ public class Drawer
 
     private void DrawPlayerField(Player player)
     {
-        DrawMap(player);
+        bool showShips = player.isHuman;
+
+        if (gamemode != Gamemode.PvE)
+        {
+            showShips = !player.isHuman;
+        }
+
+        DrawMap(player, showShips);
         WriteResources(player);
     }
 
-    private void DrawMap(Player player)
+    private void DrawMap(Player player, bool showShips)
     {
         DrawUp(player.field);
 
@@ -39,15 +39,22 @@ public class Drawer
 
             for (int j = 0; j < size; j++)
             {
-                bool isHumanForModes = player.isHuman;
+                Cell cell = player.field.GetCell(j, i);
 
-                if (gamemode != Gamemode.PvE)
+                bool isbackendOfCell = showShips;
+
+                if (player.Threat.isRadarAttack)
                 {
-                    isHumanForModes = !player.isHuman;
+                    (int radarX, int radarY, int radarRadius) = player.Threat.GetRadarData();
+
+                    if (IsCellInRadarField(j, i, radarX, radarY, radarRadius))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        isbackendOfCell = true;
+                    }
                 }
 
-                Cell cell = player.field.GetCell(j, i);
-                char cellChar = cell.GetCellSymbol(isHumanForModes);
+                char cellChar = cell.GetCellSymbol(isbackendOfCell);
                 
                 Console.Write(cellChar);
 
@@ -61,6 +68,16 @@ public class Drawer
         Console.ForegroundColor = ConsoleColor.Blue;
 
         Console.WriteLine($"\n Boats: {player.shipsCount}");
+
+        if (player.isHuman)
+        {
+            Console.WriteLine($" Radars: {player.radarsCount}, is currently in use: {player.usesRadar}\n");
+        }
+    }
+
+    private bool IsCellInRadarField(int currentX, int currentY, int radarX, int radarY, int radius)
+    {
+        return Math.Abs(currentX - radarX) <= radius && Math.Abs(currentY - radarY) <= radius;
     }
 
     private void DrawUp(Field field)

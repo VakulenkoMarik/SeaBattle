@@ -3,11 +3,14 @@ public class Player
     public int actionX = -1, actionY = -1;
 
     public bool isHuman = false;
+    public bool usesRadar = false;
     private bool endTurn = true;
 
     public int shipsCount = 5;
+    public int radarsCount = 1;
 
     public Field field = new();
+    public ThreatStatus Threat { get; private set; } = new ThreatStatus();
 
     public void GenerateField(int mapSize)
     {
@@ -19,11 +22,22 @@ public class Player
         return shipsCount <= 0;
     }
 
+    public bool CanUseRadar()
+    {
+        return radarsCount > 0;
+    }
+
     public bool LastAttackOver(Player target)
     {
         endTurn = true;
+        
+        target.Threat.ResetInfo();
 
-        if (CanTakeShot(target.field))
+        if (usesRadar)
+        {
+            RadarEspionage(target);
+        }
+        else if (CanTakeShot(target.field))
         {
             ProcessShot(target);
         }
@@ -33,6 +47,14 @@ public class Player
         }
 
         return endTurn;
+    }
+
+    private void RadarEspionage(Player target)
+    {
+        radarsCount--;
+
+        target.Threat.SetRadarAttack(actionX, actionY);
+        usesRadar = false;
     }
 
     private void ProcessShot(Player target)

@@ -3,8 +3,7 @@ public class Field
     private Random random = new Random();
     private Cell[,] cells = {};
 
-    private int mapSize;
-    public int MapSize { get {return mapSize;} private set {} }
+    public int MapSize { get; private set; }
 
     public void GenerateMap(int mapSize, int boatsCount)
     {
@@ -13,7 +12,7 @@ public class Field
             boatsCount = mapSize * mapSize - 1;
         }
 
-        this.mapSize = mapSize;
+        MapSize = mapSize;
 
         cells = new Cell[mapSize, mapSize];
 
@@ -40,8 +39,8 @@ public class Field
 
     private (int, int) GenerateUniqueXY()
     {
-        int x = random.Next(0, mapSize);
-        int y = random.Next(0, mapSize);
+        int x = random.Next(0, MapSize);
+        int y = random.Next(0, MapSize);
 
         if (cells[x, y].isShip)
         {

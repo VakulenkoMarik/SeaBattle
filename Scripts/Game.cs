@@ -110,6 +110,16 @@ public class Game
     {
         string? input = Console.ReadLine();
 
+        if (input == "R")
+        {
+            if (attacker.CanUseRadar())
+            {
+                input = Console.ReadLine();
+                
+                attacker.usesRadar = true;
+            }
+        }
+
         (attacker.actionX, attacker.actionY) = ReadInput(input);
     }
 
@@ -207,23 +217,34 @@ public class Game
 
     private void OutputResults()
     {
-        string result = BattleResult();
+        Player? winer = CheckWiner();
 
-        Console.WriteLine($"\n{result}");
+        string endText;
+
+        if (winer == null)
+        {
+            endText = "Draw";
+        }
+        else
+        {
+            endText = $"Player {(winer == player1 ? 1 : 2)} is winer";
+        }
+
+        Console.WriteLine($"\n{endText}");
     }
 
-    private string BattleResult()
+    private Player? CheckWiner()
     {
         if (player1.IsDefeat())
         {
             if (player2.IsDefeat())
             {
-                return "Draw";
+                return null;
             }
 
-            return "Player lost";
+            return player2;
         }
 
-        return "Enemy lost";
+        return player1;
     }
 }
