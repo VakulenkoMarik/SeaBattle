@@ -1,5 +1,6 @@
 public class Player
 {
+    public int roundWins;
     public int actionX = -1, actionY = -1;
 
     public bool isHuman = false;
@@ -25,6 +26,15 @@ public class Player
     public bool CanUseRadar()
     {
         return radarsCount > 0;
+    }
+
+    public void ResetValues()
+    {
+        radarsCount = 1;
+        shipsCount = 5;
+
+        endTurn = true;
+        usesRadar = false;
     }
 
     public bool LastAttackOver(Player target)

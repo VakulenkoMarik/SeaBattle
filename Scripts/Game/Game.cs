@@ -1,3 +1,5 @@
+using System.Text;
+
 public enum Gamemode
 {
     PvP,
@@ -7,10 +9,10 @@ public enum Gamemode
 
 public class Game
 {
-    private Gamemode gamemode;
     private int mapsSize = 5;
 
     private Random random = new();
+    private Drawer drawer;
 
     private Player player1;
     private Player player2;
@@ -18,11 +20,9 @@ public class Game
     private Player attacker;
     private Player target;
 
-    private Drawer drawer;
-
-    public void Start(Gamemode gm)
+    public void Start(Drawer drawer, Player p1, Player p2)
     {
-        Init(gm);
+        Init(drawer, p1, p2);
 
         GameCycle();
     }
@@ -38,48 +38,30 @@ public class Game
             Draw();
         }
 
-        OutputResults();
+        ResultsProcessing();
     }
 
-    private void Init(Gamemode gamemode)
+    private void Init(Drawer dr, Player p1, Player p2)
     {
-        this.gamemode = gamemode;
-        
-        SetPlayers();
+        drawer = dr;
 
-        attacker = player1;
-        target = player2;
-
-        drawer = new Drawer(
-            gamemode,
-            player1,
-            player2
-        );
+        ConnectPlayers(p1, p2);
 
         GenerateMaps();
 
         Draw();
     }
 
-    private void SetPlayers()
+    private void ConnectPlayers(Player connectedP1, Player connectedP2)
     {
-        (player1, player2) = gamemode switch
-        {
-            Gamemode.PvP => (MakeHumanPlayer(), MakeHumanPlayer()),
-            Gamemode.PvE => (MakeHumanPlayer(), MakeBotPlayer()),
-            Gamemode.EvE => (MakeBotPlayer(), MakeBotPlayer()),
-            _ => (player1, player2)
-        };
-    }
+        (player1, player2) = (connectedP1, connectedP2);
 
-    private Player MakeHumanPlayer()
-    {
-        return new() { isHuman = true };
-    }
+        player1.ResetValues();
+        player2.ResetValues();
 
-    private Player MakeBotPlayer()
-    {
-        return new();
+        attacker = player1;
+        target = player2;
+
     }
 
     private void GenerateMaps()
@@ -215,22 +197,38 @@ public class Game
         return false;
     }
 
-    private void OutputResults()
+    private void ResultsProcessing()
     {
+        Thread.Sleep(1000);
+        
         Player? winer = CheckWiner();
 
-        string endText;
+        if (winer != null)
+        {
+            winer.roundWins++;
+        }
+
+        OutputWiner(winer);
+    }
+
+    private void OutputWiner(Player? winer)
+    {
+        StringBuilder builder = new StringBuilder();
 
         if (winer == null)
         {
-            endText = "Draw";
+            builder.Append("Draw");
         }
         else
         {
-            endText = $"Player {(winer == player1 ? 1 : 2)} is winer";
+            builder.Append($"Player {(winer == player1 ? 1 : 2)} is winer");
         }
 
-        Console.WriteLine($"\n{endText}");
+        builder.Append($" ({player1.roundWins}/{player2.roundWins})");
+
+        drawer.DrawOnlyText(ConsoleColor.DarkRed, $"\n{builder}");
+
+        Thread.Sleep(2000);
     }
 
     private Player? CheckWiner()
