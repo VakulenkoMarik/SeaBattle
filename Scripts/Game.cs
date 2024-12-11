@@ -8,17 +8,19 @@ public class Game
     private Player player1;
     private Player player2;
 
-    public void Start(Gamemode gamemode, int rounds)
-    {
-        SetPlayers(gamemode);
+    private int rounds = 3;
 
-        StartBattle(gamemode, rounds);
+    public void Start(Gamemode gamemode)
+    {
+        StartBattle(gamemode);
 
         OutputBattleWiner();
     }
 
-    private void StartBattle(Gamemode gamemode, int rounds)
+    private void StartBattle(Gamemode gamemode)
     {
+        SetPlayers(gamemode);
+        
         for (int i = 0; i < rounds; i++)
         {
             Round round = new();
