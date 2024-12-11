@@ -1,5 +1,3 @@
-using System.Text;
-
 public enum Gamemode
 {
     PvP,
@@ -7,12 +5,13 @@ public enum Gamemode
     EvE,
 }
 
-public class Game
+public class Round
 {
     private int mapsSize = 5;
 
     private Random random = new();
     private Drawer drawer;
+    private Gamemode gamemode;
 
     private Player player1;
     private Player player2;
@@ -20,9 +19,11 @@ public class Game
     private Player attacker;
     private Player target;
 
-    public void Start(Drawer drawer, Player p1, Player p2)
+    public Player? Winer { get; private set; }
+
+    public void Start(Gamemode gm, Player p1, Player p2)
     {
-        Init(drawer, p1, p2);
+        Init(gm, p1, p2);
 
         GameCycle();
     }
@@ -41,27 +42,32 @@ public class Game
         ResultsProcessing();
     }
 
-    private void Init(Drawer dr, Player p1, Player p2)
+    private void Init(Gamemode gamemode, Player p1, Player p2)
     {
-        drawer = dr;
+        this.gamemode = gamemode;
 
         ConnectPlayers(p1, p2);
+        
+        drawer = new Drawer(
+            gamemode,
+            player1,
+            player2
+        );
+
+        attacker = player1;
+        target = player2;
 
         GenerateMaps();
 
         Draw();
     }
 
-    private void ConnectPlayers(Player connectedP1, Player connectedP2)
+    private void ConnectPlayers(Player p1, Player p2)
     {
-        (player1, player2) = (connectedP1, connectedP2);
+        (player1, player2) = (p1, p2);
 
         player1.ResetValues();
         player2.ResetValues();
-
-        attacker = player1;
-        target = player2;
-
     }
 
     private void GenerateMaps()
@@ -205,30 +211,8 @@ public class Game
 
         if (winer != null)
         {
-            winer.roundWins++;
+            Winer = winer;
         }
-
-        OutputWiner(winer);
-    }
-
-    private void OutputWiner(Player? winer)
-    {
-        StringBuilder builder = new StringBuilder();
-
-        if (winer == null)
-        {
-            builder.Append("Draw");
-        }
-        else
-        {
-            builder.Append($"Player {(winer == player1 ? 1 : 2)} is winer");
-        }
-
-        builder.Append($" ({player1.roundWins}/{player2.roundWins})");
-
-        drawer.DrawOnlyText(ConsoleColor.DarkRed, $"\n{builder}");
-
-        Thread.Sleep(2000);
     }
 
     private Player? CheckWiner()

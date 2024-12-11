@@ -1,6 +1,5 @@
 public class Player
 {
-    public int roundWins;
     public int actionX = -1, actionY = -1;
 
     public bool isHuman = false;

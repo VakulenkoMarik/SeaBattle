@@ -1,5 +1,3 @@
-using System.Drawing;
-
 public class Drawer(Gamemode gm, Player p1, Player p2)
 {
     private readonly Gamemode gamemode = gm;
@@ -94,10 +92,10 @@ public class Drawer(Gamemode gm, Player p1, Player p2)
         }
     }
 
-    public void DrawOnlyText(ConsoleColor color, string text)
+    public static void DrawOnlyText(ConsoleColor color, string text)
     {
         Console.Clear();
-        
+
         Console.ForegroundColor = color;
 
         Console.WriteLine(text);

@@ -1,4 +1,4 @@
 int rounds = 3;
-Gamemode gamemode = Gamemode.EvE;
+Gamemode gamemode = Gamemode.PvE;
 
-new Application().Start(gamemode, rounds);
+new Game().Start(gamemode, rounds);
