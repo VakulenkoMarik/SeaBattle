@@ -20,7 +20,7 @@ public class Game
     private void StartBattle(Gamemode gamemode)
     {
         SetPlayers(gamemode);
-        
+
         for (int i = 0; i < rounds; i++)
         {
             Round round = new();
