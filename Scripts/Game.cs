@@ -5,36 +5,50 @@ public class Game
     public int player1RoundsWin = 0;
     public int player2RoundsWin = 0;
 
-    private Player player1;
-    private Player player2;
+    private User user1;
+    private User user2;
+
+    private Gamemode gamemode;
 
     private int rounds = 3;
 
-    public void Start(Gamemode gamemode)
+    public void Start(User user1, User user2)
     {
-        StartBattle(gamemode);
+        GameInit(user1, user2);
 
-        OutputBattleWiner();
+        StartBattle();
+
+        BattleWinerProcessing();
     }
 
-    private void StartBattle(Gamemode gamemode)
+    private void StartBattle()
     {
-        SetPlayers(gamemode);
-
         for (int i = 0; i < rounds; i++)
         {
             Round round = new();
+
+            Player player1 = user1.CreateNewPlayer();
+            Player player2 = user2.CreateNewPlayer();
+
             round.Start(gamemode, player1, player2);
 
             WinnerProcessing(round.Winer);
         }
     }
 
+    private void GameInit(User u1, User u2)
+    {
+        DefinitionOfGamemode(u1, u2);
+
+        user1 = u1;
+        user2 = u2;
+    }
+
     private void WinnerProcessing(Player? winer)
     {
         if (winer != null)
         {
-            if (winer == player1)
+            if (winer == user1.player)
             {
                 player1RoundsWin++;
             }
@@ -47,25 +61,14 @@ public class Game
         OutputWiner(winer);
     }
 
-    private void SetPlayers(Gamemode gamemode)
+    private void DefinitionOfGamemode(User u1, User u2)
     {
-        (player1, player2) = gamemode switch
+        gamemode = (u1.IsHuman, u2.IsHuman) switch
         {
-            Gamemode.PvP => (MakeHumanPlayer(), MakeHumanPlayer()),
-            Gamemode.PvE => (MakeHumanPlayer(), MakeBotPlayer()),
-            Gamemode.EvE => (MakeBotPlayer(), MakeBotPlayer()),
-            _ => (player1, player2)
+            (true, true) => Gamemode.PvP,
+            (true, false) or (false, true) => Gamemode.PvE,
+            (false, false) => Gamemode.EvE
         };
-    }
-
-    private Player MakeHumanPlayer()
-    {
-        return new() { isHuman = true };
-    }
-
-    private Player MakeBotPlayer()
-    {
-        return new();
     }
 
     private void OutputWiner(Player? winer)
@@ -78,7 +81,7 @@ public class Game
         }
         else
         {
-            builder.Append($"Player {(winer == player1 ? 1 : 2)} is winer");
+            builder.Append($"Player {(winer == user1.player ? 1 : 2)} is winer");
         }
 
         builder.Append($" ({player1RoundsWin}/{player2RoundsWin})");
@@ -86,6 +89,16 @@ public class Game
         Drawer.DrawOnlyText(ConsoleColor.DarkRed, $"\n{builder}");
 
         Thread.Sleep(2000);
+    }
+
+    private void BattleWinerProcessing()
+    {
+        if (player1RoundsWin != player2RoundsWin)
+        {
+            _ = player1RoundsWin > player2RoundsWin ? user1.Wins++ : user2.Wins++;
+        }
+
+        OutputBattleWiner();
     }
 
     private void OutputBattleWiner()

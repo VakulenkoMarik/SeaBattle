@@ -11,7 +11,6 @@ public class Round
 
     private Random random = new();
     private Drawer drawer;
-    private Gamemode gamemode;
 
     private Player player1;
     private Player player2;
@@ -25,10 +24,10 @@ public class Round
     {
         Init(gm, p1, p2);
 
-        GameCycle();
+        RoundCycle();
     }
 
-    private void GameCycle()
+    private void RoundCycle()
     {
         while (!IsEndGame())
         {
@@ -44,8 +43,6 @@ public class Round
 
     private void Init(Gamemode gamemode, Player p1, Player p2)
     {
-        this.gamemode = gamemode;
-
         ConnectPlayers(p1, p2);
         
         drawer = new Drawer(

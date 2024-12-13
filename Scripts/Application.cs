@@ -22,6 +22,8 @@ public class Application
     {
         UsersChoice();
 
+        new Game().Start(user1, user2);
+
         SaveGameData();
     }
 
@@ -155,11 +157,7 @@ public class Application
 
     private User CreateUser(string name, bool isHuman)
     {
-        User user = new User(name)
-        {
-            IsHuman = isHuman,
-            Wins = 0
-        };
+        User user = new User(name, isHuman);
 
         return user;
     }

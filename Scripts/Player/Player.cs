@@ -1,8 +1,9 @@
-public class Player
+public class Player(string name, bool isHuman)
 {
     public int actionX = -1, actionY = -1;
+    public string Name { get; private set; } = name;
 
-    public bool isHuman = false;
+    public bool isHuman = isHuman;
     public bool usesRadar = false;
     private bool endTurn = true;
 
@@ -10,6 +11,7 @@ public class Player
     public int radarsCount = 1;
 
     public Field field = new();
+
     public ThreatStatus Threat { get; private set; } = new ThreatStatus();
 
     public void GenerateField(int mapSize)

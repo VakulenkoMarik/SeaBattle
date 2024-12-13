@@ -29,7 +29,7 @@ public class Drawer(Gamemode gm, Player p1, Player p2)
 
     private void DrawMap(Player player, bool showShips)
     {
-        DrawUp(player.field);
+        DrawUp(player);
 
         int size = player.field.MapSize;
 
@@ -80,13 +80,15 @@ public class Drawer(Gamemode gm, Player p1, Player p2)
         return Math.Abs(currentX - radarX) <= radius && Math.Abs(currentY - radarY) <= radius;
     }
 
-    private void DrawUp(Field field)
+    private void DrawUp(Player player)
     {
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine(player.Name);
 
+        Console.ForegroundColor = ConsoleColor.White;
         Console.Write("  ");
 
-        for (char c = 'a'; c < 'a' + field.MapSize; c++)
+        for (char c = 'a'; c < 'a' + player.field.MapSize; c++)
         {
             Console.Write(c + "");
         }
