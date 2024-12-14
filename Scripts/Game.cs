@@ -5,16 +5,18 @@ public class Game
     public int player1RoundsWin = 0;
     public int player2RoundsWin = 0;
 
-    private User user1;
-    private User user2;
+    private Player player1;
+    private Player player2;
+
+    public Player? BattleWiner { get; private set; }
 
     private Gamemode gamemode;
 
     private int rounds = 3;
 
-    public void Start(User user1, User user2)
+    public void Start(Player player1, Player player2)
     {
-        GameInit(user1, user2);
+        GameInit(player1, player2);
 
         StartBattle();
 
@@ -27,8 +29,8 @@ public class Game
         {
             Round round = new();
 
-            Player player1 = user1.CreateNewPlayer();
-            Player player2 = user2.CreateNewPlayer();
+            player1.ResetValues();
+            player2.ResetValues();
 
             round.Start(gamemode, player1, player2);
 
@@ -36,19 +38,19 @@ public class Game
         }
     }
 
-    private void GameInit(User u1, User u2)
+    private void GameInit(Player p1, Player p2)
     {
-        DefinitionOfGamemode(u1, u2);
+        DefinitionOfGamemode(p1, p2);
 
-        user1 = u1;
-        user2 = u2;
+        player1 = p1;
+        player2 = p2;
     }
 
     private void WinnerProcessing(Player? winer)
     {
         if (winer != null)
         {
-            if (winer == user1.player)
+            if (winer == player1)
             {
                 player1RoundsWin++;
             }
@@ -61,9 +63,9 @@ public class Game
         OutputWiner(winer);
     }
 
-    private void DefinitionOfGamemode(User u1, User u2)
+    private void DefinitionOfGamemode(Player p1, Player p2)
     {
-        gamemode = (u1.IsHuman, u2.IsHuman) switch
+        gamemode = (p1.isHuman, p2.isHuman) switch
         {
             (true, true) => Gamemode.PvP,
             (true, false) or (false, true) => Gamemode.PvE,
@@ -81,7 +83,7 @@ public class Game
         }
         else
         {
-            builder.Append($"Player {(winer == user1.player ? 1 : 2)} is winer");
+            builder.Append($"Player {(winer == player1 ? 1 : 2)} is winer");
         }
 
         builder.Append($" ({player1RoundsWin}/{player2RoundsWin})");
@@ -95,7 +97,9 @@ public class Game
     {
         if (player1RoundsWin != player2RoundsWin)
         {
-            _ = player1RoundsWin > player2RoundsWin ? user1.Wins++ : user2.Wins++;
+            Player winer = player1RoundsWin > player2RoundsWin ? player1 : player2;
+
+            BattleWiner = winer;
         }
 
         OutputBattleWiner();

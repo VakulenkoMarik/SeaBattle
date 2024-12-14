@@ -22,7 +22,12 @@ public class Application
     {
         UsersChoice();
 
-        new Game().Start(user1, user2);
+        (Player player1, Player player2) = CreateNewPlayers();
+
+        Game game = new();
+        game.Start(player1, player2);
+
+        AfterBattleProcessing(game.BattleWiner);
 
         SaveGameData();
     }
@@ -33,6 +38,24 @@ public class Application
         user2 = SelectUser();
 
         ShowPlayerList();
+
+        Thread.Sleep(1000);
+    }
+    
+    private (Player, Player) CreateNewPlayers()
+    {
+        Player p1 = user1.CreateNewPlayer();
+        Player p2 = user2.CreateNewPlayer();
+
+        return (p1, p2);
+    }
+
+    private void AfterBattleProcessing(Player? winer)
+    {
+        if (winer != null)
+        {
+            _ = winer == user1.player ? user1.Wins++ : user2.Wins++;
+        }
     }
 
     private User SelectUser()
