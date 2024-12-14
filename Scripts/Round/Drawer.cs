@@ -16,11 +16,11 @@ public class Drawer(Gamemode gm, Player p1, Player p2)
 
     private void DrawPlayerField(Player player)
     {
-        bool showShips = player.isHuman;
+        bool showShips = player.IsHuman;
 
         if (gamemode != Gamemode.PvE)
         {
-            showShips = !player.isHuman;
+            showShips = !player.IsHuman;
         }
 
         DrawMap(player, showShips);
@@ -69,7 +69,7 @@ public class Drawer(Gamemode gm, Player p1, Player p2)
 
         Console.WriteLine($"\n Boats: {player.shipsCount}");
 
-        if (player.isHuman)
+        if (player.IsHuman)
         {
             Console.WriteLine($" Radars: {player.radarsCount}, is currently in use: {player.usesRadar}\n");
         }

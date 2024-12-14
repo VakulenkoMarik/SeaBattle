@@ -1,9 +1,10 @@
 public class Player(string name, bool isHuman)
 {
     public int actionX = -1, actionY = -1;
+    
     public string Name { get; private set; } = name;
 
-    public bool isHuman = isHuman;
+    public bool IsHuman { get; private set; } = isHuman;
     public bool usesRadar = false;
     private bool endTurn = true;
 

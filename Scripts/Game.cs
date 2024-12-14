@@ -2,21 +2,18 @@ using System.Text;
 
 public class Game
 {
-    public int player1RoundsWin = 0;
-    public int player2RoundsWin = 0;
+    private GamePlayer gamePlayer1;
+    private GamePlayer gamePlayer2;
 
-    private Player player1;
-    private Player player2;
-
-    public Player? BattleWiner { get; private set; }
+    public User? BattleWiner { get; private set; }
 
     private Gamemode gamemode;
 
     private int rounds = 3;
 
-    public void Start(Player player1, Player player2)
+    public void Start(User user1, User user2)
     {
-        GameInit(player1, player2);
+        GameInit(user1, user2);
 
         StartBattle();
 
@@ -25,6 +22,9 @@ public class Game
 
     private void StartBattle()
     {
+        Player player1 = gamePlayer1.player;
+        Player player2 = gamePlayer2.player;
+
         for (int i = 0; i < rounds; i++)
         {
             Round round = new();
@@ -32,40 +32,40 @@ public class Game
             player1.ResetValues();
             player2.ResetValues();
 
-            round.Start(gamemode, player1, player2);
+            round.Start(gamemode, gamePlayer1, gamePlayer2);
 
             WinnerProcessing(round.Winer);
         }
     }
 
-    private void GameInit(Player p1, Player p2)
+    private void GameInit(User user1, User user2)
     {
-        DefinitionOfGamemode(p1, p2);
+        DefinitionOfGamemode(user1, user2);
 
-        player1 = p1;
-        player2 = p2;
+        gamePlayer1 = new(user1);
+        gamePlayer2 = new(user2);
     }
 
     private void WinnerProcessing(Player? winer)
     {
         if (winer != null)
         {
-            if (winer == player1)
+            if (winer == gamePlayer1.player)
             {
-                player1RoundsWin++;
+                gamePlayer1.roundsWins++;
             }
             else
             {
-                player2RoundsWin++;
+                gamePlayer2.roundsWins++;
             }
         }
 
         OutputWiner(winer);
     }
 
-    private void DefinitionOfGamemode(Player p1, Player p2)
+    private void DefinitionOfGamemode(User u1, User u2)
     {
-        gamemode = (p1.isHuman, p2.isHuman) switch
+        gamemode = (u1.IsHuman, u2.IsHuman) switch
         {
             (true, true) => Gamemode.PvP,
             (true, false) or (false, true) => Gamemode.PvE,
@@ -83,10 +83,10 @@ public class Game
         }
         else
         {
-            builder.Append($"Player {(winer == player1 ? 1 : 2)} is winer");
+            builder.Append($"Player {(winer == gamePlayer1.player ? 1 : 2)} is winer");
         }
 
-        builder.Append($" ({player1RoundsWin}/{player2RoundsWin})");
+        builder.Append($" ({gamePlayer1.roundsWins}/{gamePlayer2.roundsWins})");
 
         Drawer.DrawOnlyText(ConsoleColor.DarkRed, $"\n{builder}");
 
@@ -95,9 +95,12 @@ public class Game
 
     private void BattleWinerProcessing()
     {
-        if (player1RoundsWin != player2RoundsWin)
+        int player1Wins = gamePlayer1.roundsWins;
+        int player2Wins = gamePlayer2.roundsWins;
+
+        if (player1Wins != player2Wins)
         {
-            Player winer = player1RoundsWin > player2RoundsWin ? player1 : player2;
+            User winer = player1Wins > player2Wins ? gamePlayer1.user : gamePlayer2.user;
 
             BattleWiner = winer;
         }
@@ -107,15 +110,18 @@ public class Game
 
     private void OutputBattleWiner()
     {
+        int player1RoundsWins = gamePlayer1.roundsWins;
+        int player2RoundsWins = gamePlayer2.roundsWins;
+
         string text;
 
-        if (player1RoundsWin == player2RoundsWin)
+        if (player1RoundsWins == player2RoundsWins)
         {
             text = "DRAW";
         }
         else
         {
-            text = "WINER IS PLAYER " + $"{(player1RoundsWin > player2RoundsWin ? 1 : 2)}";
+            text = "WINER IS PLAYER " + $"{(player1RoundsWins > player2RoundsWins ? 1 : 2)}";
         }
 
         Drawer.DrawOnlyText(ConsoleColor.Yellow, text);

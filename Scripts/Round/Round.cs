@@ -20,7 +20,7 @@ public class Round
 
     public Player? Winer { get; private set; }
 
-    public void Start(Gamemode gm, Player p1, Player p2)
+    public void Start(Gamemode gm, GamePlayer p1, GamePlayer p2)
     {
         Init(gm, p1, p2);
 
@@ -41,9 +41,9 @@ public class Round
         ResultsProcessing();
     }
 
-    private void Init(Gamemode gamemode, Player p1, Player p2)
+    private void Init(Gamemode gamemode, GamePlayer gamePlayer1, GamePlayer gamePlayer2)
     {
-        ConnectPlayers(p1, p2);
+        ConnectPlayers(gamePlayer1.player, gamePlayer2.player);
         
         drawer = new Drawer(
             gamemode,
@@ -82,7 +82,7 @@ public class Round
 
     private void InputProcessing()
     {
-        if (attacker.isHuman)
+        if (attacker.IsHuman)
         {
             ManualInput();
             return;

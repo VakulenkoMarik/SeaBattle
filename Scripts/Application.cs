@@ -9,6 +9,11 @@ public class Application
     private User user1;
     private User user2;
 
+    JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true
+    };
+
     public void Start()
     {
         Console.WriteLine("! SEA BATTLE !");
@@ -23,7 +28,7 @@ public class Application
         UsersChoice();
 
         Game game = new();
-        game.Start(user1.player, user2.player);
+        game.Start(user1, user2);
 
         AfterBattleProcessing(game.BattleWiner);
 
@@ -40,11 +45,11 @@ public class Application
         Thread.Sleep(1000);
     }
 
-    private void AfterBattleProcessing(Player? winer)
+    private void AfterBattleProcessing(User? winer)
     {
         if (winer != null)
         {
-            _ = winer == user1.player ? user1.Wins++ : user2.Wins++;
+            _ = winer == user1 ? user1.Wins++ : user2.Wins++;
         }
     }
 
@@ -177,12 +182,7 @@ public class Application
 
     private void SaveGameData()
     {
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
-
-        string jsonData = JsonSerializer.Serialize(users, options);
+        string jsonData = JsonSerializer.Serialize(users, jsonOptions);
         File.WriteAllText(FilePath, jsonData);
     }
 
