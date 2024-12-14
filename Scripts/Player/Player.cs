@@ -32,6 +32,8 @@ public class Player(string name, bool isHuman)
 
     public void ResetValues()
     {
+        Threat.ResetInfo();
+        
         shipsCount = defaultValues.shipsCount;
         radarsCount = defaultValues.radarsCount;
 

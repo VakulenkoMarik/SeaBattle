@@ -22,16 +22,9 @@ public class Game
 
     private void StartBattle()
     {
-        Player player1 = gamePlayer1.player;
-        Player player2 = gamePlayer2.player;
-
         for (int i = 0; i < rounds; i++)
         {
             Round round = new();
-
-            player1.ResetValues();
-            player2.ResetValues();
-
             round.Start(gamemode, gamePlayer1, gamePlayer2);
 
             WinnerProcessing(round.Winer);
