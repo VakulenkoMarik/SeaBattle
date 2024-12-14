@@ -4,11 +4,5 @@ public class User(string name, bool isHuman)
     public int Wins { get; set; } = 0;
     public bool IsHuman { get; private set; } = isHuman;
 
-    public Player? player { get; private set; }
-
-    public Player CreateNewPlayer()
-    {
-        player = new(Name, IsHuman);
-        return player;
-    }
+    public Player player { get; private set; } = new(name, isHuman);
 }
