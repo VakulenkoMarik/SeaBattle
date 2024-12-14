@@ -1,18 +1,18 @@
 public class Player(string name, bool isHuman)
 {
+    public string Name { get; private set; } = name;
+    public bool IsHuman { get; private set; } = isHuman;
+
     public int actionX = -1, actionY = -1;
     
-    public string Name { get; private set; } = name;
-
-    public bool IsHuman { get; private set; } = isHuman;
     public bool usesRadar = false;
     private bool endTurn = true;
 
-    public int shipsCount = 5;
-    public int radarsCount = 1;
+    public int shipsCount;
+    public int radarsCount;
+    private DefaultPlayerValues defaultValues = new(5, 1);
 
     public Field field = new();
-
     public ThreatStatus Threat { get; private set; } = new ThreatStatus();
 
     public void GenerateField(int mapSize)
@@ -32,8 +32,8 @@ public class Player(string name, bool isHuman)
 
     public void ResetValues()
     {
-        radarsCount = 1;
-        shipsCount = 5;
+        shipsCount = defaultValues.shipsCount;
+        radarsCount = defaultValues.radarsCount;
 
         endTurn = true;
         usesRadar = false;
@@ -85,4 +85,10 @@ public class Player(string name, bool isHuman)
     {
         return !fieldOfAttack.GetCell(actionX, actionY).isShot;
     }
+}
+
+public struct DefaultPlayerValues(int shipsCount, int radarsCount)
+{
+    public int shipsCount = shipsCount;
+    public int radarsCount = radarsCount;
 }

@@ -7,7 +7,7 @@ public enum Gamemode
 
 public class Round
 {
-    private int mapsSize = 5;
+    private int mapsSize = 3;
 
     private Random random = new();
     private Drawer drawer;
