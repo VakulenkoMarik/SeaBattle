@@ -10,12 +10,31 @@ public class Player(string name, bool isHuman)
 
     public int shipsCount;
     public int radarsCount;
-    private DefaultPlayerValues defaultValues = new(5, 1);
+    private DefaultPlayerValues defaultValues;
 
     public Field field = new();
     public ThreatStatus Threat { get; private set; } = new ThreatStatus();
 
-    public void GenerateField(int mapSize)
+    public void CreatingMapProcessing(int mapSize, int ships, int radars)
+    {
+        SetDefaultValues(mapSize, ships, radars);
+
+        GenerateField(mapSize);
+    }
+
+    private void SetDefaultValues(int mapSize, int shipsCount, int radarsCount)
+    {
+        int mapArea = mapSize * mapSize;
+
+        if (shipsCount > mapArea)
+        {
+            this.shipsCount = mapArea - 1;
+        }
+
+        defaultValues = new(shipsCount, radarsCount);
+    }
+
+    private void GenerateField(int mapSize)
     {
         field.GenerateMap(mapSize, shipsCount);
     }

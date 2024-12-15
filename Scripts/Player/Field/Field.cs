@@ -7,11 +7,6 @@ public class Field
 
     public void GenerateMap(int mapSize, int boatsCount)
     {
-        if (mapSize * mapSize < boatsCount)
-        {
-            boatsCount = mapSize * mapSize - 1;
-        }
-
         MapSize = mapSize;
 
         cells = new Cell[mapSize, mapSize];

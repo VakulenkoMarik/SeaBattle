@@ -7,7 +7,9 @@ public enum Gamemode
 
 public class Round
 {
-    private int mapsSize = 3;
+    private int mapsSize = 2;
+    private int playerShipsCount = 5;
+    private int playerRadarsCount = 1;
 
     private Random random = new();
     private Drawer drawer;
@@ -69,8 +71,8 @@ public class Round
 
     private void GenerateMaps()
     {
-        player1.GenerateField(mapsSize);
-        player2.GenerateField(mapsSize);
+        player1.CreatingMapProcessing(mapsSize, playerShipsCount, playerRadarsCount);
+        player2.CreatingMapProcessing(mapsSize, playerShipsCount, playerRadarsCount);
     }
 
     private void Draw()
