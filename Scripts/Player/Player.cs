@@ -28,10 +28,13 @@ public class Player(string name, bool isHuman)
 
         if (shipsCount > mapArea)
         {
-            this.shipsCount = mapArea - 1;
+            shipsCount = mapArea - 1;
         }
 
         defaultValues = new(shipsCount, radarsCount);
+
+        this.shipsCount = shipsCount;
+        this.radarsCount = radarsCount;
     }
 
     private void GenerateField(int mapSize)
