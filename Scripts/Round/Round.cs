@@ -7,7 +7,7 @@ public enum Gamemode
 
 public class Round
 {
-    private int mapsSize = 2;
+    private int mapsSize = 3;
     private int playerShipsCount = 5;
     private int playerRadarsCount = 1;
 

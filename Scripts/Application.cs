@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 
 public class Application
@@ -16,7 +17,7 @@ public class Application
 
     public void Start()
     {
-        Console.WriteLine("! SEA BATTLE !");
+        Console.Clear();
 
         users = LoadGameData();
 
@@ -73,25 +74,46 @@ public class Application
 
         Console.WriteLine("current users:");
 
-        ShowUserData(user1);
-        ShowUserData(user2);
+        ShowUserData(user1, true);
+        ShowUserData(user2, true);
 
-        Console.WriteLine("\nSELECT A USER \nList of users:");
+        Console.WriteLine("\nSELECT A USER \nList of users:\n");
 
         for (int i = 0; i < users.Count; i++)
         {
-            Console.WriteLine((i + 1) + $". {users[i].Name} ({users[i].Wins} wins) --- is human = {users[i].IsHuman}");
+            Console.Write($"{i + 1}.");
+            
+            ShowUserData(users[i]);
         }
 
-        Console.WriteLine("\nOR CREATE A NEW ONE (C)");
+        Console.WriteLine("\nOR CREATE A NEW ONE (Press C)");
     }
 
-    private void ShowUserData(User user)
+    private void ShowUserData(User user, bool onlyName = false)
     {
-        if (user != null)
+        if (user == null)
         {
-            Console.WriteLine(user.Name + (user.IsHuman ? " (is human)" : " (is not human)"));
+            return;
         }
+
+        if (onlyName)
+        {
+            Console.WriteLine(user.Name);
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append($"{user.Name} ({user.Wins} wins) --- is ");
+
+        if (!user.IsHuman)
+        {
+            sb.Append("not ");
+        }
+
+        sb.Append("human");
+
+        Console.WriteLine(sb.ToString());
     }
 
     private User? InputOfUserSelect()
