@@ -9,7 +9,7 @@ public class Game
 
     private Gamemode gamemode;
 
-    private int rounds = 3;
+    private int rounds = 1;
 
     public void Start(User user1, User user2)
     {
@@ -33,6 +33,9 @@ public class Game
 
     private void GameInit(User user1, User user2)
     {
+        user1.Games++;
+        user2.Games++;
+
         DefinitionOfGamemode(user1, user2);
 
         gamePlayer1 = new(user1);

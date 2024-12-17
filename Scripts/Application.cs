@@ -52,6 +52,14 @@ public class Application
         {
             _ = winer == user1 ? user1.Wins++ : user2.Wins++;
         }
+
+        DeterminingUserWinrate(user1);
+        DeterminingUserWinrate(user2);
+    }
+
+    private void DeterminingUserWinrate(User user)
+    {
+        user.Winrate = (double)user.Wins / (double)user.Games;
     }
 
     private User SelectUser()
@@ -104,7 +112,7 @@ public class Application
 
         StringBuilder sb = new StringBuilder();
 
-        sb.Append($"{user.Name} ({user.Wins} wins) --- is ");
+        sb.Append($"{user.Name} ({user.Wins} wins, {user.Games} games, {user.Winrate} winrate) --- is ");
 
         if (!user.IsHuman)
         {

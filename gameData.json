@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "Tom",
+    "IsHuman": true,
+    "Wins": 3,
+    "Games": 4,
+    "Winrate": 0.75
+  },
+  {
+    "Name": "Ann",
+    "IsHuman": false,
+    "Wins": 1,
+    "Games": 4,
+    "Winrate": 0.25
+  }
+]
